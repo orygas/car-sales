@@ -1,8 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Auto Market
+
+A modern car marketplace built with Next.js, TypeScript, and Tailwind CSS. This project allows users to browse, search, and list cars for sale with a clean and responsive user interface.
+
+## Tech Stack
+
+- **Framework**: Next.js 15.1
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Theme**: Dark/Light mode support
+- **Database**: MongoDB (configured)
+- **Form Handling**: React Hook Form with Zod validation
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+3. Create a `.env` file in the root directory with your MongoDB connection string:
+
+```bash
+DATABASE_URL="your_mongodb_connection_string"
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
@@ -10,27 +39,64 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Current Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 🎨 Responsive layout with mobile-first design
+- 🌓 Dark/Light theme support with system preference detection
+- 🚗 Featured car listings section
+- 🔍 Search functionality with make and price range filters
+- 💅 Modern UI components using shadcn/ui
+- 📱 Mobile-friendly navigation
+- 🎨 Custom font integration (Geist)
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+├── app/                  # Next.js app directory
+├── components/          # React components
+│   ├── cars/           # Car-related components
+│   ├── layout/         # Layout components
+│   └── ui/             # UI components
+├── lib/                # Utility functions and configurations
+└── public/            # Static assets
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## TODOs
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### High Priority
+- [ ] Implement authentication system
+- [ ] Create car listing form
+- [ ] Set up MongoDB models for cars and users
+- [ ] Add API routes for CRUD operations
+- [ ] Implement image upload functionality
 
-## Deploy on Vercel
+### Medium Priority
+- [ ] Add pagination to car listings
+- [ ] Implement advanced search filters
+- [ ] Add user dashboard
+- [ ] Create favorite/save listing functionality
+- [ ] Add sorting options for search results
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Low Priority
+- [ ] Add more language options
+- [ ] Implement email notifications
+- [ ] Add social sharing features
+- [ ] Create car comparison tool
+- [ ] Add analytics tracking
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Development Notes
+
+- The project uses Turbopack for faster development builds
+- Custom theme configuration is available in `globals.css`
+- Component library is built on top of Radix UI primitives
+- MongoDB connection is configured for both development and production environments
+
+
+## Deployment
+
+The project is configured for deployment on Vercel. For other platforms, please refer to the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying).
