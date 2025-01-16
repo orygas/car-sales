@@ -3,15 +3,19 @@ import { Button } from "@/components/ui/button"
 
 export function Header() {
   return (
-    <header className="flex justify-between items-center mb-10">
-      <h1 className="text-4xl font-bold">Auto Market</h1>
-      <div className="flex items-center gap-4">
-        <Button variant="outline" asChild className="h-10">
-          <Link href="/login">Login</Link>
-        </Button>
-        <Button asChild className="h-10">
-          <Link href="/cars/new">Sell Your Car</Link>
-        </Button>
+    <header className="border-b">
+      <div className="container mx-auto flex h-16 items-center justify-between">
+        <Link href="/" className="text-2xl font-bold hover:opacity-80">
+          Auto Market
+        </Link>
+        <div className="flex items-center gap-4">
+          <Button variant="outline" asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/cars/new">Sell Your Car</Link>
+          </Button>
+        </div>
       </div>
     </header>
   )

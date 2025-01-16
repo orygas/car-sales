@@ -55,7 +55,7 @@ pnpm dev
 
 ## Project Structure
 
-```
+```text
 ├── app/                  # Next.js app directory
 ├── components/          # React components
 │   ├── cars/           # Car-related components
@@ -68,6 +68,7 @@ pnpm dev
 ## TODOs
 
 ### High Priority
+
 - [ ] Implement authentication system
 - [ ] Create car listing form
 - [ ] Set up MongoDB models for cars and users
@@ -75,6 +76,7 @@ pnpm dev
 - [ ] Implement image upload functionality
 
 ### Medium Priority
+
 - [ ] Add pagination to car listings
 - [ ] Implement advanced search filters
 - [ ] Add user dashboard
@@ -82,12 +84,12 @@ pnpm dev
 - [ ] Add sorting options for search results
 
 ### Low Priority
+
 - [ ] Add more language options
 - [ ] Implement email notifications
 - [ ] Add social sharing features
 - [ ] Create car comparison tool
 - [ ] Add analytics tracking
-
 
 ## Development Notes
 
@@ -95,7 +97,6 @@ pnpm dev
 - Custom theme configuration is available in `globals.css`
 - Component library is built on top of Radix UI primitives
 - MongoDB connection is configured for both development and production environments
-
 
 ## Deployment
 
