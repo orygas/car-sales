@@ -34,12 +34,12 @@ export function Footer() {
               <li><a href="/support" className="text-muted-foreground hover:text-primary">Support</a></li>
             </ul>
           </div>
-          <div className="md:col-span-3 flex justify-end">
-            <div className="space-y-4">
+          <div className="md:col-span-3 flex md:justify-end">
+            <div className="w-full md:w-auto space-y-4">
               <div className="space-y-2">
                 <label className="text-base font-semibold">Language</label>
                 <Select defaultValue="en" onValueChange={() => {}}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-full md:w-[180px]">
                     <SelectValue placeholder="Select Language" />
                   </SelectTrigger>
                   <SelectContent>
@@ -50,7 +50,7 @@ export function Footer() {
               <div className="space-y-2">
                 <label className="text-base font-semibold">Theme</label>
                 <Select value={theme || "system"} onValueChange={setTheme}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-full md:w-[180px]">
                     <SelectValue placeholder="Select theme" />
                   </SelectTrigger>
                   <SelectContent>

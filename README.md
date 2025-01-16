@@ -52,6 +52,8 @@ pnpm dev
 - 💅 Modern UI components using shadcn/ui
 - 📱 Mobile-friendly navigation
 - 🎨 Custom font integration (Geist)
+- 🚙 Car listing form with searchable make dropdown
+- ✨ Real-time search filtering for car makes
 
 ## Project Structure
 
@@ -69,8 +71,9 @@ pnpm dev
 
 ### High Priority
 
+- [ ] Fix React useEffect dependency warning in car form
 - [ ] Implement authentication system
-- [ ] Create car listing form
+- [x] Create car listing form
 - [ ] Set up MongoDB models for cars and users
 - [ ] Add API routes for CRUD operations
 - [ ] Implement image upload functionality
