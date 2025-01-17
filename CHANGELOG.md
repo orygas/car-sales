@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.0] - 2024-03-18
+## [0.3.0] - 2025-01-17
 
 ### Added
 - Authentication with Clerk
@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 - Type safety improvements
 - Layout and styling issues
 
-## [0.2.0] - 2024-03-17
+## [0.2.0] - 2024-01-16
 
 ### Added
 - Car listing form
@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file.
 - Improved UI components
 - Enhanced form user experience
 
-## [0.1.0] - 2024-03-16
+## [0.1.0] - 2025-01-16
 
 ### Added
 - Initial project setup
