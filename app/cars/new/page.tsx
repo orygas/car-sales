@@ -1,12 +1,18 @@
-import { CarListingForm } from "@/components/cars/car-form"
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { CarListingForm } from "@/components/cars/car-form";
 
-export default function NewCarListingPage() {
+export default async function NewCarPage() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    redirect("/");
+  }
+
   return (
-    <>
-      <h1 className="text-4xl font-bold mb-10">List Your Car</h1>
-      <div className="mx-auto">
-        <CarListingForm />
-      </div>
-    </>
-  )
+    <div className="max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-8">List Your Car</h1>
+      <CarListingForm />
+    </div>
+  );
 } 

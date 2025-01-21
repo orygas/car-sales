@@ -5,10 +5,12 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { ClerkProvider } from "@clerk/nextjs"
+import { Toaster } from "@/components/ui/toaster"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -36,11 +38,14 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <div className="relative flex min-h-screen flex-col">
               <Header />
               <div className="flex-1 container mx-auto py-10">
                 {children}
               </div>
               <Footer />
+            </div>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

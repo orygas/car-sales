@@ -1,15 +1,11 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware } from '@clerk/nextjs/server';
 
-export default clerkMiddleware({
-  // Public routes that don't require authentication
-  publicRoutes: [
-    "/",
-    "/cars",
-    "/api/cars",
-    "/api/cars/:id",
-  ],
-});
+export default clerkMiddleware();
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search
+    '/((?!_next|.*\\..*).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)'],
 }; 

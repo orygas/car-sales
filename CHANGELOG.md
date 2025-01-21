@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 - Type safety improvements
 - Layout and styling issues
 
-## [0.2.0] - 2024-01-16
+## [0.2.0] - 2025-01-16
 
 ### Added
 - Car listing form

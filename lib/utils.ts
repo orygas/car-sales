@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from "clsx"
+import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -298,4 +298,8 @@ export async function getCarModels(makeId: string): Promise<CarModel[]> {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
   return CAR_MODELS[makeId] || [];
+}
+
+export function formatPrice(price: number) {
+  return new Intl.NumberFormat('pl-PL').format(price)
 }

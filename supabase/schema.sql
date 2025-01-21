@@ -1,78 +1,89 @@
--- Create tables
+-- Create a table for car listings
 CREATE TABLE cars (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id VARCHAR(255) NOT NULL,
+  -- Primary key and timestamps
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  user_id TEXT NOT NULL,
+
+  -- Basic vehicle information
   make TEXT NOT NULL,
   model TEXT NOT NULL,
-  year INTEGER NOT NULL,
-  price DECIMAL(10, 2) NOT NULL,
-  mileage INTEGER NOT NULL,
-  description TEXT NOT NULL,
-  condition TEXT NOT NULL,
-  transmission TEXT NOT NULL,
-  fuel_type TEXT NOT NULL,
+  year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM NOW()) + 1),
+  price INTEGER NOT NULL CHECK (price > 0),
+  mileage INTEGER NOT NULL CHECK (mileage > 0),
+  description TEXT NOT NULL CHECK (length(description) <= 6000),
+  
+  -- Vehicle specifications
+  condition TEXT NOT NULL CHECK (condition IN ('new', 'used', 'parts')),
+  transmission TEXT NOT NULL CHECK (transmission IN ('manual', 'automatic')),
+  fuel_type TEXT NOT NULL CHECK (fuel_type IN ('gasoline', 'diesel', 'electric', 'hybrid', 'lpg', 'other')),
   location TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+  
+  -- VIN information
+  has_vin BOOLEAN NOT NULL DEFAULT false,
+  vin TEXT CHECK (vin IS NULL OR length(vin) = 17),
+  
+  -- Vehicle status
+  is_damaged BOOLEAN NOT NULL DEFAULT false,
+  is_imported BOOLEAN NOT NULL DEFAULT false,
+  import_country TEXT,
+  is_first_owner BOOLEAN DEFAULT false,
+  is_accident_free BOOLEAN DEFAULT false,
+  is_registered BOOLEAN DEFAULT false,
+  is_serviced_at_dealer BOOLEAN DEFAULT false,
+  has_tuning BOOLEAN DEFAULT false,
+  
+  -- Registration information
+  registration_number TEXT DEFAULT '',
+  first_registration_date TEXT DEFAULT '',
+  show_registration_info BOOLEAN NOT NULL DEFAULT false,
+
+  -- Images array to store Supabase Storage URLs
+  images TEXT[] NOT NULL DEFAULT '{}'
 );
 
--- Create table for car images
-CREATE TABLE car_images (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  car_id UUID REFERENCES cars(id) ON DELETE CASCADE,
-  url TEXT NOT NULL,
-  is_primary BOOLEAN DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+-- Create indexes for better query performance
+CREATE INDEX idx_cars_user_id ON cars(user_id);
+CREATE INDEX idx_cars_make_model ON cars(make, model);
+CREATE INDEX idx_cars_price ON cars(price);
+CREATE INDEX idx_cars_year ON cars(year);
+CREATE INDEX idx_cars_created_at ON cars(created_at);
 
--- Create indexes
-CREATE INDEX cars_user_id_idx ON cars(user_id);
-CREATE INDEX cars_make_model_idx ON cars(make, model);
-CREATE INDEX cars_price_idx ON cars(price);
-CREATE INDEX cars_created_at_idx ON cars(created_at);
+-- Create a function to automatically update the updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = timezone('utc'::text, now());
+  RETURN NEW;
+END;
+$$ language 'plpgsql';
 
--- Enable Row Level Security
+-- Create a trigger to automatically update the updated_at timestamp
+CREATE TRIGGER update_cars_updated_at
+  BEFORE UPDATE ON cars
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Set up Row Level Security (RLS)
 ALTER TABLE cars ENABLE ROW LEVEL SECURITY;
-ALTER TABLE car_images ENABLE ROW LEVEL SECURITY;
 
--- Create policies
-CREATE POLICY "Public cars are viewable by everyone"
-  ON cars FOR SELECT
-  USING (true);
+-- Create policies for cars table
+CREATE POLICY "Allow public read access" ON cars
+  FOR SELECT USING (true);
 
-CREATE POLICY "Users can insert their own cars"
-  ON cars FOR INSERT
-  WITH CHECK (auth.uid()::text = user_id);
+-- Since we're using Clerk, we'll handle authentication in our API routes
+-- These policies will allow any operation, and we'll handle auth in our application code
+CREATE POLICY "Allow all operations" ON cars
+  FOR ALL USING (true);
 
-CREATE POLICY "Users can update their own cars"
-  ON cars FOR UPDATE
-  USING (auth.uid()::text = user_id);
+-- Update the VIN column to be optional text with length check
+ALTER TABLE cars 
+  ALTER COLUMN vin TYPE TEXT,
+  ALTER COLUMN vin DROP NOT NULL,
+  DROP CONSTRAINT IF EXISTS cars_vin_check,
+  ADD CONSTRAINT cars_vin_check CHECK (vin IS NULL OR length(vin) = 17);
 
-CREATE POLICY "Users can delete their own cars"
-  ON cars FOR DELETE
-  USING (auth.uid()::text = user_id);
-
--- Image policies
-CREATE POLICY "Public images are viewable by everyone"
-  ON car_images FOR SELECT
-  USING (true);
-
-CREATE POLICY "Users can insert images for their own cars"
-  ON car_images FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM cars
-      WHERE id = car_images.car_id
-      AND user_id = auth.uid()::text
-    )
-  );
-
-CREATE POLICY "Users can delete images for their own cars"
-  ON car_images FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM cars
-      WHERE id = car_images.car_id
-      AND user_id = auth.uid()::text
-    )
-  ); 
+-- Update the has_vin column
+ALTER TABLE cars
+  ALTER COLUMN has_vin SET DEFAULT false; 
