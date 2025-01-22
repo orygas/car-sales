@@ -1,15 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from "@/components/ui/carousel"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { ImageDialog } from "@/components/cars/image-dialog"
+import useEmblaCarousel from 'embla-carousel-react'
+import Image from "next/image"
 
 interface CarouselWrapperProps {
   images: string[]
@@ -25,39 +21,70 @@ export function CarouselWrapper({
   price 
 }: CarouselWrapperProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [api, setApi] = useState<CarouselApi>()
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
 
   useEffect(() => {
-    if (!api) {
-      return
+    if (emblaApi) {
+      emblaApi.on('select', () => {
+        setCurrentIndex(emblaApi.selectedScrollSnap())
+      })
     }
+  }, [emblaApi])
 
-    api.on("select", () => {
-      setCurrentIndex(api.selectedScrollSnap())
-    })
-  }, [api])
+  const scrollPrev = () => emblaApi && emblaApi.scrollPrev()
+  const scrollNext = () => emblaApi && emblaApi.scrollNext()
 
   return (
-    <Carousel className="w-full" setApi={setApi}>
-      <CarouselContent>
-        {images.map((imageUrl: string, index: number) => (
-          <CarouselItem key={imageUrl} className="relative">
-            <ImageDialog 
-              image={imageUrl} 
-              images={images} 
-              initialIndex={index} 
-              make={make} 
-              model={model}
-              price={price}
-            />
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <div className="absolute bottom-4 right-4 z-10 bg-black/60 text-white px-3 py-1 rounded-md text-sm">
-        {currentIndex + 1}/{images.length}
+    <div className="relative">
+      <div className="overflow-hidden rounded-lg" ref={emblaRef}>
+        <div className="flex aspect-video">
+          {images.map((imageUrl, index) => (
+            <div key={imageUrl} className="flex-[0_0_100%] relative">
+              <ImageDialog
+                images={images}
+                make={make}
+                model={model}
+                price={price}
+                initialIndex={index}
+              >
+                <div className="relative w-full h-full cursor-pointer">
+                  <Image
+                    src={imageUrl}
+                    alt={`Image ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </ImageDialog>
+            </div>
+          ))}
+        </div>
       </div>
-      <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2" />
-      <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2" />
-    </Carousel>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70"
+        onClick={(e) => {
+          e.stopPropagation()
+          scrollPrev()
+        }}
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70"
+        onClick={(e) => {
+          e.stopPropagation()
+          scrollNext()
+        }}
+      >
+        <ChevronRight className="h-6 w-6" />
+      </Button>
+      <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+        {currentIndex + 1} / {images.length}
+      </div>
+    </div>
   )
 } 

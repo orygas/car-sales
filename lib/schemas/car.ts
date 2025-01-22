@@ -13,9 +13,13 @@ export const carSchema = z.object({
   location: z.string().min(1, "Location is required"),
   has_vin: z.boolean().default(false),
   vin: z.string()
-    .length(17, "VIN must be exactly 17 characters")
-    .optional()
-    .transform(val => val || null),
+    .transform(val => val || null)
+    .pipe(
+      z.string()
+        .length(17, "VIN must be exactly 17 characters")
+        .optional()
+        .nullable()
+    ),
   images: z.array(z.string()).min(1, "At least one image is required"),
   is_damaged: z.boolean(),
   is_imported: z.boolean(),

@@ -23,23 +23,60 @@ export function Footer() {
   }
 
   return (
-    <footer className="border-t mt-20">
-      <div className="container mx-auto py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="h-full flex flex-col">
-            <h3 className="text-base font-semibold mb-2">Auto Market</h3>
-            <ul className="flex-1 flex flex-col justify-between text-sm">
-              <li><a href="/about" className="text-muted-foreground hover:text-primary">About Us</a></li>
-              <li><a href="/contact" className="text-muted-foreground hover:text-primary">Contact</a></li>
-              <li><a href="/support" className="text-muted-foreground hover:text-primary">Support</a></li>
-            </ul>
+    <footer className="border-t mt-20 bg-background">
+      <div className="container mx-auto py-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Main Content */}
+          <div className="md:col-span-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+              {/* Company Info */}
+              <div>
+                <h3 className="font-semibold mb-3">Auto Market</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <a href="/about" className="text-muted-foreground hover:text-primary transition-colors">
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                      Contact
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/support" className="text-muted-foreground hover:text-primary transition-colors">
+                      Support
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              
+              {/* Legal */}
+              <div>
+                <h3 className="font-semibold mb-3">Legal</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <a href="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
+                      Privacy Policy
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/terms" className="text-muted-foreground hover:text-primary transition-colors">
+                      Terms of Service
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div className="md:col-span-3 flex md:justify-end">
-            <div className="w-full md:w-auto space-y-4">
-              <div className="space-y-2">
-                <label className="text-base font-semibold">Language</label>
+
+          {/* Settings */}
+          <div className="md:col-span-4">
+            <div className="space-y-4">
+              <div>
+                <label className="block font-semibold mb-2">Language</label>
                 <Select defaultValue="en" onValueChange={() => {}}>
-                  <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Language" />
                   </SelectTrigger>
                   <SelectContent>
@@ -47,10 +84,10 @@ export function Footer() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <label className="text-base font-semibold">Theme</label>
+              <div>
+                <label className="block font-semibold mb-2">Theme</label>
                 <Select value={theme || "system"} onValueChange={setTheme}>
-                  <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select theme" />
                   </SelectTrigger>
                   <SelectContent>
@@ -63,7 +100,9 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
+
+        {/* Copyright */}
+        <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} Auto Market. All rights reserved.
         </div>
       </div>

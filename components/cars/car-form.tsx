@@ -520,12 +520,12 @@ export function CarListingForm() {
                       switch (field) {
                         case "make":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Make</FormLabel>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Make</FormLabel>
                                   <MakeSelect
                                     makes={makes}
                                     loading={loading}
@@ -535,44 +535,44 @@ export function CarListingForm() {
                                     setOpenMake={setOpenMake}
                                     field={field}
                                   />
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "model":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Model</FormLabel>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Model</FormLabel>
                                   <ModelSelect
                                     models={models}
                                     loadingModels={loadingModels}
                                     hasMake={!!selectedMake}
                                     field={field}
                                   />
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "year":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Year</FormLabel>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Year</FormLabel>
                                   <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value.toString()}>
-                                    <FormControl>
+                    <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select year" />
                                       </SelectTrigger>
-                                    </FormControl>
+                    </FormControl>
                                     <SelectContent>
                                       {Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i).map((year) => (
                                         <SelectItem key={year} value={year.toString()}>
@@ -581,68 +581,72 @@ export function CarListingForm() {
                                       ))}
                                     </SelectContent>
                                   </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "price":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
+                render={({ field }) => (
+                  <FormItem>
                                   <FormLabel>Price (zł)</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
+                    <FormControl>
+                      <Input
+                        type="number"
+                                      inputMode="numeric"
+                                      pattern="[0-9]*"
                                       placeholder="Enter price in PLN"
-                                      {...field}
+                        {...field}
                                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "mileage":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
+                render={({ field }) => (
+                  <FormItem>
                                   <FormLabel>Mileage (km)</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
+                    <FormControl>
+                      <Input
+                        type="number"
+                                      inputMode="numeric"
+                                      pattern="[0-9]*"
                                       placeholder="Enter mileage in kilometers"
-                                      {...field}
+                        {...field}
                                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "location":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Location</FormLabel>
-                                  <FormControl>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
                                     <Input placeholder="City, Country" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "vin":
                           return (
@@ -660,9 +664,7 @@ export function CarListingForm() {
                                       value={field.value || ''}
                                       onChange={(e) => {
                                         const value = e.target.value.toUpperCase();
-                                        if (value.length <= 17) {
-                                          field.onChange(value || null);
-                                        }
+                                        field.onChange(value || null);
                                       }}
                                     />
                                   </FormControl>
@@ -676,107 +678,107 @@ export function CarListingForm() {
                           )
                         case "condition":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Condition</FormLabel>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Condition</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
-                                    <SelectTrigger>
+                        <SelectTrigger>
                                       <SelectValue placeholder="Select the condition of your vehicle" />
-                                    </SelectTrigger>
-                                    <SelectContent>
+                        </SelectTrigger>
+                      <SelectContent>
                                       <SelectItem value="new">New</SelectItem>
                                       <SelectItem value="used">Used</SelectItem>
                                       <SelectItem value="parts">For Parts</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "transmission":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Transmission</FormLabel>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Transmission</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
-                                    <SelectTrigger>
+                        <SelectTrigger>
                                       <SelectValue placeholder="Select the transmission type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
+                        </SelectTrigger>
+                      <SelectContent>
                                       <SelectItem value="automatic">Automatic</SelectItem>
                                       <SelectItem value="manual">Manual</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "fuel_type":
                           return (
-                            <FormField
-                              control={form.control}
+              <FormField
+                control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Fuel Type</FormLabel>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fuel Type</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
-                                    <SelectTrigger>
+                        <SelectTrigger>
                                       <SelectValue placeholder="Select the fuel type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
+                        </SelectTrigger>
+                      <SelectContent>
                                       <SelectItem value="gasoline">Gasoline</SelectItem>
                                       <SelectItem value="diesel">Diesel</SelectItem>
                                       <SelectItem value="electric">Electric</SelectItem>
                                       <SelectItem value="hybrid">Hybrid</SelectItem>
                                       <SelectItem value="lpg">LPG</SelectItem>
                                       <SelectItem value="other">Other</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                           )
                         case "description":
                           return (
-                            <FormField
-                              control={form.control}
+            <FormField
+              control={form.control}
                               name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Description</FormLabel>
-                                  <FormControl>
-                                    <Textarea
-                                      placeholder="Describe your car..."
-                                      className="min-h-[100px]"
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormDescription>
-                                    Include important details about your cars features, history, and condition.
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe your car..."
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Include important details about your cars features, history, and condition.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
                           )
                         case "images":
                           return (
-                            <FormField
-                              control={form.control}
+            <FormField
+              control={form.control}
                               name={field}
-                              render={() => (
-                                <FormItem>
-                                  <FormLabel>Images</FormLabel>
-                                  <FormControl>
+              render={() => (
+                <FormItem>
+                  <FormLabel>Images</FormLabel>
+                  <FormControl>
                                     <ImageUpload
                                       imagePreviews={imagePreviews}
                                       onUpload={handleImageUpload}
@@ -837,13 +839,13 @@ export function CarListingForm() {
                                       Yes
                                     </Button>
                                     <Button
-                                      type="button"
+                            type="button"
                                       variant={field.value === false ? "default" : "outline"}
                                       onClick={() => field.onChange(false)}
                                     >
                                       No
                                     </Button>
-                                  </div>
+                        </div>
                                   <FormMessage />
                                 </FormItem>
                               )}
@@ -1050,7 +1052,7 @@ export function CarListingForm() {
                                     >
                                       No
                                     </Button>
-                                  </div>
+                        </div>
                                   <FormMessage />
                                 </FormItem>
                               )}
@@ -1079,11 +1081,11 @@ export function CarListingForm() {
                                     >
                                       No
                                     </Button>
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                    </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
                           )
                       }
                     })()}
@@ -1125,7 +1127,7 @@ export function CarListingForm() {
                     ) : (
                       "Next"
                     )}
-                  </Button>
+            </Button>
                 )}
               </div>
           </form>
