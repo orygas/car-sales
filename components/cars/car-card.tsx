@@ -21,7 +21,7 @@ export function CarCard({ listing }: CarCardProps) {
               className="object-cover"
             />
           </div>
-          <h3 className="font-semibold text-lg">
+          <h3 className="font-semibold text-lg truncate">
             {listing.make.toUpperCase()} {listing.model.toUpperCase()}
           </h3>
           <p className="text-sm text-muted-foreground">

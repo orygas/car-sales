@@ -18,7 +18,6 @@ CREATE TABLE cars (
   condition TEXT NOT NULL CHECK (condition IN ('new', 'used', 'parts')),
   transmission TEXT NOT NULL CHECK (transmission IN ('manual', 'automatic')),
   fuel_type TEXT NOT NULL CHECK (fuel_type IN ('gasoline', 'diesel', 'electric', 'hybrid', 'lpg', 'other')),
-  location TEXT NOT NULL,
   
   -- VIN information
   has_vin BOOLEAN NOT NULL DEFAULT false,

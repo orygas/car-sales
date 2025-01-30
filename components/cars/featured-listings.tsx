@@ -30,8 +30,8 @@ export async function FeaturedListings() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {listings.map((listing) => (
           <Link key={listing.id} href={`/cars/${listing.id}`}>
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
+            <Card className="hover:shadow-lg transition-shadow h-full">
+              <CardContent className="p-4 flex flex-col">
                 <div className="relative aspect-video rounded-lg overflow-hidden mb-4">
                   <Image
                     src={listing.images[0]}
@@ -40,11 +40,15 @@ export async function FeaturedListings() {
                     className="object-cover"
                   />
                 </div>
-                <h3 className="font-semibold text-lg">{listing.make.toUpperCase()} {listing.model.toUpperCase()}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {listing.year} • {listing.mileage.toLocaleString()} km
-                </p>
-                <p className="font-bold mt-2">{formatPrice(listing.price)} zł</p>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg truncate">
+                    {listing.make.toUpperCase()} {listing.model.toUpperCase()}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {listing.year} • {listing.mileage.toLocaleString()} km
+                  </p>
+                  <p className="font-bold mt-2">{formatPrice(listing.price)} zł</p>
+                </div>
               </CardContent>
             </Card>
           </Link>
