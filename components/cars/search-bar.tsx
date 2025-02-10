@@ -25,11 +25,16 @@ export function SearchBar() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [makes, setMakes] = useState<CarMake[]>([])
+  const [models, setModels] = useState<CarModel[]>([])
   const [loading, setLoading] = useState(true)
+  const [modelLoading, setModelLoading] = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [open, setOpen] = useState(false)
+  const [modelOpen, setModelOpen] = useState(false)
   const [value, setValue] = useState(searchParams.get("make") || "")
+  const [modelValue, setModelValue] = useState(searchParams.get("model") || "")
   const [search, setSearch] = useState("")
+  const [modelSearch, setModelSearch] = useState("")
   const [yearFrom, setYearFrom] = useState(searchParams.get("yearFrom") || "")
   const [yearTo, setYearTo] = useState(searchParams.get("yearTo") || "")
   const [priceRange, setPriceRange] = useState(searchParams.get("priceRange") || "")
@@ -57,13 +62,47 @@ export function SearchBar() {
     fetchMakes()
   }, [])
 
+  useEffect(() => {
+    const fetchModels = async () => {
+      if (!value) {
+        setModels([])
+        setModelValue("")
+        return
+      }
+
+      setModelLoading(true)
+      try {
+        const data = await getCarModels(value)
+        setModels(data)
+      } catch (error) {
+        console.error("Failed to fetch car models:", error)
+      } finally {
+        setModelLoading(false)
+      }
+    }
+
+    fetchModels()
+  }, [value])
+
   const filteredMakes = makes.filter((make) =>
     make.name.toLowerCase().includes(search.toLowerCase())
   )
 
+  const filteredModels = models.filter((model) =>
+    model.name.toLowerCase().includes(modelSearch.toLowerCase())
+  )
+
   const handleSearch = () => {
-    const params = new URLSearchParams()
+    const params = new URLSearchParams(searchParams.toString())
+    
+    // Clear all existing params except view
+    Array.from(params.keys()).forEach(key => {
+      if (key !== "view") params.delete(key)
+    })
+
+    // Set new filter values if they exist
     if (value) params.set("make", value)
+    if (modelValue) params.set("model", modelValue)
     if (yearFrom) params.set("yearFrom", yearFrom)
     if (yearTo) params.set("yearTo", yearTo)
     if (priceRange) params.set("priceRange", priceRange)
@@ -76,14 +115,42 @@ export function SearchBar() {
     router.push(`/cars?${params.toString()}`)
   }
 
+  const handleReset = () => {
+    setValue("")
+    setModelValue("")
+    setYearFrom("")
+    setYearTo("")
+    setPriceRange("")
+    setTransmission("")
+    setFuelType("")
+    setMileageFrom("")
+    setMileageTo("")
+    setKeyword("")
+    setSearch("")
+    setModelSearch("")
+    
+    const params = new URLSearchParams()
+    if (searchParams.get("view")) {
+      params.set("view", searchParams.get("view")!)
+    }
+    router.push(`/cars?${params.toString()}`)
+  }
+
   return (
     <Card className="mb-10">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>Find Your Perfect Car</CardTitle>
+        <Button 
+          variant="ghost" 
+          onClick={handleReset}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          Reset filters
+        </Button>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="md:col-span-1">
+          <div className="md:col-span-2 grid grid-cols-2 gap-4">
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -134,6 +201,66 @@ export function SearchBar() {
                             )}
                           />
                           {make.name}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <Popover open={modelOpen} onOpenChange={setModelOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={modelOpen}
+                  className="w-full justify-between h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={!value || modelLoading}
+                >
+                  {modelValue
+                    ? models.find((model) => model.id === modelValue)?.name
+                    : !value
+                      ? "Select make first"
+                      : modelLoading
+                        ? "Loading models..."
+                        : "Select model..."}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start" sideOffset={4}>
+                <div className="flex flex-col">
+                  <Input
+                    placeholder="Search model..."
+                    value={modelSearch}
+                    onChange={(e) => setModelSearch(e.target.value)}
+                    className="border-0 focus-visible:ring-0"
+                  />
+                  <div className="max-h-[300px] overflow-y-auto">
+                    {filteredModels.length === 0 ? (
+                      <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none text-muted-foreground">
+                        No model found.
+                      </div>
+                    ) : (
+                      filteredModels.map((model) => (
+                        <div
+                          key={model.id}
+                          className={cn(
+                            "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+                            modelValue === model.id && "bg-accent text-accent-foreground"
+                          )}
+                          onClick={() => {
+                            setModelValue(modelValue === model.id ? "" : model.id)
+                            setModelOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              modelValue === model.id ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {model.name}
                         </div>
                       ))
                     )}

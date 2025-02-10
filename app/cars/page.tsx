@@ -72,12 +72,12 @@ async function getFilteredListings(searchParams: { [key: string]: string | strin
 
 function CarGrid({ listings }: { listings: CarListingWithId[] }) {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
       {listings.map((listing) => (
         <Link key={listing.id} href={`/cars/${listing.id}`}>
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-4">
-              <div className="relative aspect-video rounded-lg overflow-hidden mb-4">
+          <Card className="h-full hover:shadow-lg transition-shadow">
+            <CardContent className="p-3 sm:p-4">
+              <div className="relative aspect-video rounded-lg overflow-hidden mb-3 sm:mb-4">
                 <Image
                   src={listing.images[0]}
                   alt={`${listing.make} ${listing.model}`}
@@ -85,13 +85,13 @@ function CarGrid({ listings }: { listings: CarListingWithId[] }) {
                   className="object-cover"
                 />
               </div>
-              <h3 className="font-semibold text-lg">
+              <h3 className="font-semibold text-base sm:text-lg">
                 {listing.make.toUpperCase()} {listing.model.toUpperCase()}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {listing.year} • {listing.mileage.toLocaleString()} km
               </p>
-              <p className="font-bold mt-2">{formatPrice(listing.price)} zł</p>
+              <p className="font-bold text-sm sm:text-base mt-1 sm:mt-2">{formatPrice(listing.price)} zł</p>
             </CardContent>
           </Card>
         </Link>
@@ -102,13 +102,13 @@ function CarGrid({ listings }: { listings: CarListingWithId[] }) {
 
 function CarList({ listings }: { listings: CarListingWithId[] }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {listings.map((listing) => (
         <Link key={listing.id} href={`/cars/${listing.id}`}>
           <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex gap-4">
-                <div className="relative w-48 aspect-video rounded-lg overflow-hidden">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <div className="relative w-full sm:w-48 aspect-video rounded-lg overflow-hidden">
                   <Image
                     src={listing.images[0]}
                     alt={`${listing.make} ${listing.model}`}
@@ -116,14 +116,14 @@ function CarList({ listings }: { listings: CarListingWithId[] }) {
                     className="object-cover"
                   />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-base sm:text-lg">
                     {listing.make.toUpperCase()} {listing.model.toUpperCase()}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {listing.year} • {listing.mileage.toLocaleString()} km
                   </p>
-                  <p className="font-bold mt-2">{formatPrice(listing.price)} zł</p>
+                  <p className="font-bold text-sm sm:text-base mt-1 sm:mt-2">{formatPrice(listing.price)} zł</p>
                 </div>
               </div>
             </CardContent>
