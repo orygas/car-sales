@@ -287,6 +287,8 @@ export function CarListingForm() {
       registration_number: "",
       first_registration_date: "",
       show_registration_info: false,
+      seller_name: "",
+      seller_phone: "",
     }
   })
 
@@ -491,649 +493,684 @@ export function CarListingForm() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[300px,1fr]">
-      <div className="hidden lg:block">
-        <Card className="p-6">
-          <CarFormStepper
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-            completedSteps={completedSteps}
-            form={form}
-          />
+    <div className="container py-6">
+      <div className="space-y-6">
+        <CarFormStepper
+          currentStep={currentStep}
+          setCurrentStep={setCurrentStep}
+          completedSteps={completedSteps}
+          form={form}
+        />
+        <Card>
+          <CardHeader>
+            <CardTitle>{currentStep.title}</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {currentStep.description}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <div className="grid gap-6">
+                  {currentStep.fields.map((field, index) => (
+                    <div key={`${field}-${index}`}>
+                      {/* Render form fields based on current step */}
+                      {(() => {
+                        switch (field) {
+                          case "make":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Make</FormLabel>
+                                    <MakeSelect
+                                      makes={makes}
+                                      loading={loading}
+                                      makeSearch={makeSearch}
+                                      setMakeSearch={setMakeSearch}
+                                      openMake={openMake}
+                                      setOpenMake={setOpenMake}
+                                      field={field}
+                                    />
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "model":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Model</FormLabel>
+                                    <ModelSelect
+                                      models={models}
+                                      loadingModels={loadingModels}
+                                      hasMake={!!selectedMake}
+                                      field={field}
+                                    />
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "year":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Year</FormLabel>
+                                    <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value.toString()}>
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select year" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        {Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                                          <SelectItem key={year} value={year.toString()}>
+                                            {year}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "price":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Price (zł)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder="Enter price in PLN"
+                                        {...field}
+                                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "mileage":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Mileage (km)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder="Enter mileage in kilometers"
+                                        {...field}
+                                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "location":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Location</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="City, Country" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "vin":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>VIN (optional)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Enter vehicle identification number"
+                                        maxLength={17}
+                                        {...field}
+                                        value={field.value || ''}
+                                        onChange={(e) => {
+                                          const value = e.target.value.toUpperCase();
+                                          field.onChange(value || null);
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormDescription>
+                                      The 17-character Vehicle Identification Number
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "condition":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Condition</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select the condition of your vehicle" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="new">New</SelectItem>
+                                        <SelectItem value="used">Used</SelectItem>
+                                        <SelectItem value="parts">For Parts</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "transmission":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Transmission</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select the transmission type" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="automatic">Automatic</SelectItem>
+                                        <SelectItem value="manual">Manual</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "fuel_type":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Fuel Type</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select the fuel type" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="gasoline">Gasoline</SelectItem>
+                                        <SelectItem value="diesel">Diesel</SelectItem>
+                                        <SelectItem value="electric">Electric</SelectItem>
+                                        <SelectItem value="hybrid">Hybrid</SelectItem>
+                                        <SelectItem value="lpg">LPG</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "description":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                      <Textarea
+                                        placeholder="Describe your car..."
+                                        className="min-h-[100px]"
+                                        {...field}
+                                        minLength={50}
+                                      />
+                                    </FormControl>
+                                    <FormDescription>
+                                      Include important details about your car&apos;s features, history, and condition (minimum 50 characters).
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "images":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={() => (
+                                  <FormItem>
+                                    <FormLabel>Images</FormLabel>
+                                    <FormControl>
+                                      <ImageUpload
+                                        imagePreviews={imagePreviews}
+                                        onUpload={handleImageUpload}
+                                        onRemove={handleRemoveImage}
+                                      />
+                                    </FormControl>
+                                    <FormDescription>
+                                      Upload up to 20 images of your car. First image will be the main image.
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "is_damaged":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Is the car damaged?</FormLabel>
+                                    <div className="flex gap-4">
+                                      <Button
+                                        type="button"
+                                        variant={field.value === true ? "default" : "outline"}
+                                        onClick={() => field.onChange(true)}
+                                      >
+                                        Yes
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={field.value === false ? "default" : "outline"}
+                                        onClick={() => field.onChange(false)}
+                                      >
+                                        No
+                                      </Button>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "is_imported":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Is the car imported?</FormLabel>
+                                    <div className="flex gap-4">
+                                      <Button
+                                        type="button"
+                                        variant={field.value === true ? "default" : "outline"}
+                                        onClick={() => field.onChange(true)}
+                                      >
+                                        Yes
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={field.value === false ? "default" : "outline"}
+                                        onClick={() => field.onChange(false)}
+                                      >
+                                        No
+                                      </Button>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "import_country":
+                            return watch("is_imported") && (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Import Country</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select country of import" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {EU_COUNTRIES.map(country => (
+                                          <SelectItem key={country.code} value={country.name}>
+                                            {country.name}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "is_first_owner":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Are you the first owner?</FormLabel>
+                                    <div className="flex gap-4">
+                                      <Button
+                                        type="button"
+                                        variant={field.value === true ? "default" : "outline"}
+                                        onClick={() => field.onChange(true)}
+                                      >
+                                        Yes
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={field.value === false ? "default" : "outline"}
+                                        onClick={() => field.onChange(false)}
+                                      >
+                                        No
+                                      </Button>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "is_accident_free":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Is the car accident free?</FormLabel>
+                                    <div className="flex gap-4">
+                                      <Button
+                                        type="button"
+                                        variant={field.value === true ? "default" : "outline"}
+                                        onClick={() => field.onChange(true)}
+                                      >
+                                        Yes
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={field.value === false ? "default" : "outline"}
+                                        onClick={() => field.onChange(false)}
+                                      >
+                                        No
+                                      </Button>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "is_registered":
+                            return (
+                              <div className="space-y-4">
+                                <FormField
+                                  control={form.control}
+                                  name={field}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Is the car registered?</FormLabel>
+                                      <div className="flex gap-4">
+                                        <Button
+                                          type="button"
+                                          variant={field.value === true ? "default" : "outline"}
+                                          onClick={() => field.onChange(true)}
+                                        >
+                                          Yes
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant={field.value === false ? "default" : "outline"}
+                                          onClick={() => field.onChange(false)}
+                                        >
+                                          No
+                                        </Button>
+                                      </div>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                {watch("is_registered") && (
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <FormField
+                                      control={form.control}
+                                      name="registration_number"
+                                      render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Vehicle Registration Number</FormLabel>
+                                            <Input 
+                                              {...field} 
+                                              placeholder="for example WA6642E"
+                                              className={cn(
+                                                "placeholder:text-muted-foreground",
+                                                field.value ? "text-foreground" : "text-muted-foreground"
+                                              )}
+                                              value={field.value || ''}
+                                              onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                                            />
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                      control={form.control}
+                                      name="first_registration_date"
+                                      render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>First Registration Date</FormLabel>
+                                            <Input {...field} type="date" />
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          case "show_registration_info":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Show registration information in listing?</FormLabel>
+                                    <div className="flex gap-4">
+                                      <Button
+                                        type="button"
+                                        variant={field.value === true ? "default" : "outline"}
+                                        onClick={() => field.onChange(true)}
+                                      >
+                                        Yes
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={field.value === false ? "default" : "outline"}
+                                        onClick={() => field.onChange(false)}
+                                      >
+                                        No
+                                      </Button>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "is_serviced_at_dealer":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Is the car serviced at licensed manufacturer services?</FormLabel>
+                                    <div className="flex gap-4">
+                                      <Button
+                                        type="button"
+                                        variant={field.value === true ? "default" : "outline"}
+                                        onClick={() => field.onChange(true)}
+                                      >
+                                        Yes
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={field.value === false ? "default" : "outline"}
+                                        onClick={() => field.onChange(false)}
+                                      >
+                                        No
+                                      </Button>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "has_tuning":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Does the car have tuning?</FormLabel>
+                                    <div className="flex gap-4">
+                                      <Button
+                                        type="button"
+                                        variant={field.value === true ? "default" : "outline"}
+                                        onClick={() => field.onChange(true)}
+                                      >
+                                        Yes
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={field.value === false ? "default" : "outline"}
+                                        onClick={() => field.onChange(false)}
+                                      >
+                                        No
+                                      </Button>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "seller_name":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Your Name</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Enter your name" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                          case "seller_phone":
+                            return (
+                              <FormField
+                                control={form.control}
+                                name={field}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Phone Number</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="Enter your phone number" 
+                                        type="tel"
+                                        {...field} 
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )
+                        }
+                      })()}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between pt-4 border-t">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onBack}
+                    disabled={carSteps[0].id === currentStep.id}
+                  >
+                    Back
+                  </Button>
+                  {currentStep.id === carSteps[carSteps.length - 1].id ? (
+                    <Button 
+                      type="submit" 
+                      disabled={submitting || !imagePreviews.length}
+                    >
+                      {submitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating listing...
+                        </>
+                      ) : (
+                        "Create Listing"
+                      )}
+                    </Button>
+                  ) : (
+                    <Button 
+                      type="button" 
+                      onClick={onNext}
+                      disabled={currentStep.id === "images" && !imagePreviews.length}
+                    >
+                      {currentStep.id === "images" && !imagePreviews.length ? (
+                        "Please add at least one image"
+                      ) : (
+                        "Next"
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Form>
+          </CardContent>
         </Card>
       </div>
-    <Card>
-      <CardHeader>
-          <CardTitle>{currentStep.title}</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            {currentStep.description}
-          </p>
-      </CardHeader>
-        <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid gap-6">
-                {currentStep.fields.map((field, index) => (
-                  <div key={`${field}-${index}`}>
-                    {/* Render form fields based on current step */}
-                    {(() => {
-                      switch (field) {
-                        case "make":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Make</FormLabel>
-                                  <MakeSelect
-                                    makes={makes}
-                                    loading={loading}
-                                    makeSearch={makeSearch}
-                                    setMakeSearch={setMakeSearch}
-                                    openMake={openMake}
-                                    setOpenMake={setOpenMake}
-                                    field={field}
-                                  />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "model":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Model</FormLabel>
-                                  <ModelSelect
-                                    models={models}
-                                    loadingModels={loadingModels}
-                                    hasMake={!!selectedMake}
-                                    field={field}
-                                  />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "year":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Year</FormLabel>
-                                  <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value.toString()}>
-                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select year" />
-                                      </SelectTrigger>
-                    </FormControl>
-                                    <SelectContent>
-                                      {Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                                        <SelectItem key={year} value={year.toString()}>
-                                          {year}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "price":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                                  <FormLabel>Price (zł)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                                      inputMode="numeric"
-                                      pattern="[0-9]*"
-                                      placeholder="Enter price in PLN"
-                        {...field}
-                                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "mileage":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                                  <FormLabel>Mileage (km)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                                      inputMode="numeric"
-                                      pattern="[0-9]*"
-                                      placeholder="Enter mileage in kilometers"
-                        {...field}
-                                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "location":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <FormControl>
-                                    <Input placeholder="City, Country" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "vin":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>VIN (optional)</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Enter vehicle identification number"
-                                      maxLength={17}
-                                      {...field}
-                                      value={field.value || ''}
-                                      onChange={(e) => {
-                                        const value = e.target.value.toUpperCase();
-                                        field.onChange(value || null);
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormDescription>
-                                    The 17-character Vehicle Identification Number
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "condition":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Condition</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <SelectTrigger>
-                                      <SelectValue placeholder="Select the condition of your vehicle" />
-                        </SelectTrigger>
-                      <SelectContent>
-                                      <SelectItem value="new">New</SelectItem>
-                                      <SelectItem value="used">Used</SelectItem>
-                                      <SelectItem value="parts">For Parts</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "transmission":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Transmission</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <SelectTrigger>
-                                      <SelectValue placeholder="Select the transmission type" />
-                        </SelectTrigger>
-                      <SelectContent>
-                                      <SelectItem value="automatic">Automatic</SelectItem>
-                                      <SelectItem value="manual">Manual</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "fuel_type":
-                          return (
-              <FormField
-                control={form.control}
-                              name={field}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Fuel Type</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <SelectTrigger>
-                                      <SelectValue placeholder="Select the fuel type" />
-                        </SelectTrigger>
-                      <SelectContent>
-                                      <SelectItem value="gasoline">Gasoline</SelectItem>
-                                      <SelectItem value="diesel">Diesel</SelectItem>
-                                      <SelectItem value="electric">Electric</SelectItem>
-                                      <SelectItem value="hybrid">Hybrid</SelectItem>
-                                      <SelectItem value="lpg">LPG</SelectItem>
-                                      <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                          )
-                        case "description":
-                          return (
-            <FormField
-              control={form.control}
-                              name={field}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe your car..."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Include important details about your cars features, history, and condition.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-                          )
-                        case "images":
-                          return (
-            <FormField
-              control={form.control}
-                              name={field}
-              render={() => (
-                <FormItem>
-                  <FormLabel>Images</FormLabel>
-                  <FormControl>
-                                    <ImageUpload
-                                      imagePreviews={imagePreviews}
-                                      onUpload={handleImageUpload}
-                                      onRemove={handleRemoveImage}
-                                    />
-                                  </FormControl>
-                                  <FormDescription>
-                                    Upload up to 20 images of your car. First image will be the main image.
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "is_damaged":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Is the car damaged?</FormLabel>
-                                  <div className="flex gap-4">
-                                    <Button
-                                      type="button"
-                                      variant={field.value === true ? "default" : "outline"}
-                                      onClick={() => field.onChange(true)}
-                                    >
-                                      Yes
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={field.value === false ? "default" : "outline"}
-                                      onClick={() => field.onChange(false)}
-                                    >
-                                      No
-                                    </Button>
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "is_imported":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Is the car imported?</FormLabel>
-                                  <div className="flex gap-4">
-                                    <Button
-                                      type="button"
-                                      variant={field.value === true ? "default" : "outline"}
-                                      onClick={() => field.onChange(true)}
-                                    >
-                                      Yes
-                                    </Button>
-                                    <Button
-                            type="button"
-                                      variant={field.value === false ? "default" : "outline"}
-                                      onClick={() => field.onChange(false)}
-                                    >
-                                      No
-                                    </Button>
-                        </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "import_country":
-                          return watch("is_imported") && (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Import Country</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value || ""}>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select country of import" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {EU_COUNTRIES.map(country => (
-                                        <SelectItem key={country.code} value={country.name}>
-                                          {country.name}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "is_first_owner":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Are you the first owner?</FormLabel>
-                                  <div className="flex gap-4">
-                                    <Button
-                                      type="button"
-                                      variant={field.value === true ? "default" : "outline"}
-                                      onClick={() => field.onChange(true)}
-                                    >
-                                      Yes
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={field.value === false ? "default" : "outline"}
-                                      onClick={() => field.onChange(false)}
-                                    >
-                                      No
-                                    </Button>
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "is_accident_free":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Is the car accident free?</FormLabel>
-                                  <div className="flex gap-4">
-                                    <Button
-                                      type="button"
-                                      variant={field.value === true ? "default" : "outline"}
-                                      onClick={() => field.onChange(true)}
-                                    >
-                                      Yes
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={field.value === false ? "default" : "outline"}
-                                      onClick={() => field.onChange(false)}
-                                    >
-                                      No
-                                    </Button>
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "is_registered":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Is the car registered?</FormLabel>
-                                  <div className="flex gap-4">
-                                    <Button
-                                      type="button"
-                                      variant={field.value === true ? "default" : "outline"}
-                                      onClick={() => field.onChange(true)}
-                                    >
-                                      Yes
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={field.value === false ? "default" : "outline"}
-                                      onClick={() => field.onChange(false)}
-                                    >
-                                      No
-                                    </Button>
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "registration_number":
-                          return watch("is_registered") && (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Vehicle Registration Number</FormLabel>
-                                  <Input 
-                                    {...field} 
-                                    placeholder="for example WA6642E"
-                                    className={cn(
-                                      "placeholder:text-muted-foreground",
-                                      field.value ? "text-foreground" : "text-muted-foreground"
-                                    )}
-                                    value={field.value || ''}
-                                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                                  />
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "first_registration_date":
-                          return watch("is_registered") && (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>First Registration Date</FormLabel>
-                                  <Input {...field} type="date" />
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "show_registration_info":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Show registration information in listing?</FormLabel>
-                                  <div className="flex gap-4">
-                                    <Button
-                                      type="button"
-                                      variant={field.value === true ? "default" : "outline"}
-                                      onClick={() => field.onChange(true)}
-                                    >
-                                      Yes
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={field.value === false ? "default" : "outline"}
-                                      onClick={() => field.onChange(false)}
-                                    >
-                                      No
-                                    </Button>
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "is_serviced_at_dealer":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Is the car serviced at licensed manufacturer services?</FormLabel>
-                                  <div className="flex gap-4">
-                                    <Button
-                                      type="button"
-                                      variant={field.value === true ? "default" : "outline"}
-                                      onClick={() => field.onChange(true)}
-                                    >
-                                      Yes
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={field.value === false ? "default" : "outline"}
-                                      onClick={() => field.onChange(false)}
-                                    >
-                                      No
-                                    </Button>
-                        </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )
-                        case "has_tuning":
-                          return (
-                            <FormField
-                              control={form.control}
-                              name={field}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Does the car have tuning?</FormLabel>
-                                  <div className="flex gap-4">
-                                    <Button
-                                      type="button"
-                                      variant={field.value === true ? "default" : "outline"}
-                                      onClick={() => field.onChange(true)}
-                                    >
-                                      Yes
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={field.value === false ? "default" : "outline"}
-                                      onClick={() => field.onChange(false)}
-                                    >
-                                      No
-                                    </Button>
-                    </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-                          )
-                      }
-                    })()}
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-between pt-4 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onBack}
-                  disabled={carSteps[0].id === currentStep.id}
-                >
-                  Back
-                </Button>
-                {currentStep.id === carSteps[carSteps.length - 1].id ? (
-                  <Button 
-                    type="submit" 
-                    disabled={submitting || !imagePreviews.length}
-                  >
-                    {submitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating listing...
-                      </>
-                    ) : (
-                      "Create Listing"
-                    )}
-                  </Button>
-                ) : (
-                  <Button 
-                    type="button" 
-                    onClick={onNext}
-                    disabled={currentStep.id === "images" && !imagePreviews.length}
-                  >
-                    {currentStep.id === "images" && !imagePreviews.length ? (
-                      "Please add at least one image"
-                    ) : (
-                      "Next"
-                    )}
-            </Button>
-                )}
-              </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
     </div>
   )
 } 

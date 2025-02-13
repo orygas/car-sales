@@ -3,6 +3,7 @@
 import * as React from "react"
 import { CarStep, carSteps, CarListing } from "@/lib/schemas/car"
 import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { Check } from "lucide-react"
 import { UseFormReturn } from "react-hook-form"
@@ -60,56 +61,58 @@ export function CarFormStepper({
     }
   }
 
+  const progress = Math.round((completedSteps.size / carSteps.length) * 100)
+
   return (
-    <nav aria-label="Progress">
-      <ol role="list" className="space-y-2">
+    <div className="space-y-4">
+      <div className="space-y-1">
+        <p className="text-sm font-medium">Progress</p>
+        <Progress value={progress} className="h-2" />
+      </div>
+      <nav aria-label="Progress" className="flex gap-2 overflow-x-auto pb-2">
         {carSteps.map((step) => {
-          // Find the last completed step index
           const lastCompletedIndex = Math.max(...carSteps
             .map((s, index) => completedSteps.has(s.id) ? index : -1)
           )
           const stepIndex = carSteps.findIndex(s => s.id === step.id)
-          
-          // A step is disabled if it's not completed, not the current step, and not the next step after last completed
           const isDisabled = !completedSteps.has(step.id) && 
                            step.id !== currentStep.id && 
                            stepIndex !== lastCompletedIndex + 1
 
           return (
-            <li key={step.id}>
-              <Button
-                variant="ghost"
-                className={cn(
-                  "w-full flex items-center text-left px-3 py-2 h-auto",
-                  step.id === currentStep.id && "bg-accent",
-                  completedSteps.has(step.id) && "text-primary",
-                  isDisabled && "opacity-50 cursor-not-allowed"
-                )}
-                onClick={() => handleStepClick(step)}
-                disabled={isDisabled}
-              >
-                <div className="flex items-center gap-3 w-full">
-                  <div className="shrink-0 flex items-center justify-center w-5 h-5">
-                    {completedSteps.has(step.id) ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      <div className="h-4 w-4 rounded-full border-2 border-current" />
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="text-sm font-medium truncate">
-                      {step.title}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {step.description}
-                    </span>
-                  </div>
+            <Button
+              key={step.id}
+              variant={step.id === currentStep.id ? "default" : "outline"}
+              className={cn(
+                "flex-1 min-w-fit text-left px-3 py-2 h-auto",
+                step.id === currentStep.id 
+                  ? "text-primary-foreground" 
+                  : completedSteps.has(step.id) 
+                    ? "text-primary" 
+                    : "",
+                isDisabled && "opacity-50 cursor-not-allowed"
+              )}
+              onClick={() => handleStepClick(step)}
+              disabled={isDisabled}
+            >
+              <div className="flex items-center gap-2">
+                <div className="shrink-0 flex items-center justify-center w-5 h-5">
+                  {completedSteps.has(step.id) ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <div className="h-4 w-4 rounded-full border-2 border-current" />
+                  )}
                 </div>
-              </Button>
-            </li>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <span className="text-sm font-medium truncate">
+                    {step.title}
+                  </span>
+                </div>
+              </div>
+            </Button>
           )
         })}
-      </ol>
-    </nav>
+      </nav>
+    </div>
   )
 } 

@@ -73,7 +73,9 @@ export async function POST(request: Request) {
         has_tuning: body.has_tuning,
         registration_number: body.registration_number,
         first_registration_date: body.first_registration_date,
-        show_registration_info: body.show_registration_info
+        show_registration_info: body.show_registration_info,
+        seller_name: body.seller_name,
+        seller_phone: body.seller_phone
       }])
       .select()
       .single();

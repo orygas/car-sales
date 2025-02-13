@@ -6,7 +6,7 @@ export const carSchema = z.object({
   year: z.number().min(1900, "Year must be after 1900").max(new Date().getFullYear() + 1, "Year cannot be in the future"),
   price: z.number().min(1, "Price must be greater than 0"),
   mileage: z.number().min(1, "Mileage must be greater than 0"),
-  description: z.string().max(6000, "Description cannot be longer than 6000 characters"),
+  description: z.string().min(50, "Description must be at least 50 characters").max(6000, "Description cannot be longer than 6000 characters"),
   condition: z.enum(["new", "used", "parts"]),
   transmission: z.enum(["manual", "automatic"]),
   fuel_type: z.enum(["gasoline", "diesel", "electric", "hybrid", "lpg", "other"]),
@@ -32,6 +32,8 @@ export const carSchema = z.object({
   registration_number: z.string().optional().transform(val => val || ""),
   first_registration_date: z.string().optional().transform(val => val || ""),
   show_registration_info: z.boolean(),
+  seller_name: z.string().min(1, "Seller name is required"),
+  seller_phone: z.string().min(1, "Phone number is required"),
 }).superRefine((data, ctx) => {
   if (data.is_registered) {
     if (!data.registration_number) {
@@ -100,6 +102,12 @@ export const carSteps = [
     title: "Images",
     description: "Upload images of your vehicle",
     fields: ["images"],
+  },
+  {
+    id: "seller",
+    title: "Seller Information",
+    description: "Your contact information",
+    fields: ["seller_name", "seller_phone"],
   },
 ] as const
 

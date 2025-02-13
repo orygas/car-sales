@@ -2,8 +2,8 @@
 CREATE TABLE cars (
   -- Primary key and timestamps
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   user_id TEXT NOT NULL,
 
   -- Basic vehicle information
@@ -12,7 +12,8 @@ CREATE TABLE cars (
   year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM NOW()) + 1),
   price INTEGER NOT NULL CHECK (price > 0),
   mileage INTEGER NOT NULL CHECK (mileage > 0),
-  description TEXT NOT NULL CHECK (length(description) <= 6000),
+  description TEXT NOT NULL CHECK (length(description) >= 50 AND length(description) <= 6000),
+  location TEXT NOT NULL,
   
   -- Vehicle specifications
   condition TEXT NOT NULL CHECK (condition IN ('new', 'used', 'parts')),
@@ -23,23 +24,35 @@ CREATE TABLE cars (
   has_vin BOOLEAN NOT NULL DEFAULT false,
   vin TEXT CHECK (vin IS NULL OR length(vin) = 17),
   
-  -- Vehicle status
+  -- Vehicle status and history
   is_damaged BOOLEAN NOT NULL DEFAULT false,
   is_imported BOOLEAN NOT NULL DEFAULT false,
-  import_country TEXT,
-  is_first_owner BOOLEAN DEFAULT false,
-  is_accident_free BOOLEAN DEFAULT false,
-  is_registered BOOLEAN DEFAULT false,
-  is_serviced_at_dealer BOOLEAN DEFAULT false,
-  has_tuning BOOLEAN DEFAULT false,
+  import_country TEXT CHECK (is_imported = false OR import_country IS NOT NULL),
+  is_first_owner BOOLEAN NOT NULL DEFAULT false,
+  is_accident_free BOOLEAN NOT NULL DEFAULT false,
+  is_registered BOOLEAN NOT NULL DEFAULT false,
+  is_serviced_at_dealer BOOLEAN NOT NULL DEFAULT false,
+  has_tuning BOOLEAN NOT NULL DEFAULT false,
   
   -- Registration information
   registration_number TEXT DEFAULT '',
   first_registration_date TEXT DEFAULT '',
   show_registration_info BOOLEAN NOT NULL DEFAULT false,
 
+  -- Seller information
+  seller_name TEXT NOT NULL,
+  seller_phone TEXT NOT NULL,
+
   -- Images array to store Supabase Storage URLs
-  images TEXT[] NOT NULL DEFAULT '{}'
+  images TEXT[] NOT NULL DEFAULT '{}',
+
+  -- Add constraints for registration information
+  CONSTRAINT registration_info_check CHECK (
+    NOT is_registered OR (
+      registration_number != '' AND
+      first_registration_date != ''
+    )
+  )
 );
 
 -- Create indexes for better query performance
@@ -47,13 +60,14 @@ CREATE INDEX idx_cars_user_id ON cars(user_id);
 CREATE INDEX idx_cars_make_model ON cars(make, model);
 CREATE INDEX idx_cars_price ON cars(price);
 CREATE INDEX idx_cars_year ON cars(year);
-CREATE INDEX idx_cars_created_at ON cars(created_at);
+CREATE INDEX idx_cars_created_at ON cars(created_at DESC);
+CREATE INDEX idx_cars_location ON cars(location);
 
 -- Create a function to automatically update the updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-  NEW.updated_at = timezone('utc'::text, now());
+  NEW.updated_at = now();
   RETURN NEW;
 END;
 $$ language 'plpgsql';
@@ -72,7 +86,6 @@ CREATE POLICY "Allow public read access" ON cars
   FOR SELECT USING (true);
 
 -- Since we're using Clerk, we'll handle authentication in our API routes
--- These policies will allow any operation, and we'll handle auth in our application code
 CREATE POLICY "Allow all operations" ON cars
   FOR ALL USING (true);
 

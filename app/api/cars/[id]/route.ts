@@ -43,10 +43,21 @@ export async function PATCH(request: Request, props: { params: Promise<{ id: str
 
     const body = await request.json();
 
+    // Validate required seller fields
+    if (!body.seller_name || !body.seller_phone) {
+      return NextResponse.json(
+        { error: "Seller name and phone number are required" },
+        { status: 400 }
+      );
+    }
+
     // Update car listing
     const { data: car, error: carError } = await supabaseAdmin
       .from("cars")
-      .update(body)
+      .update({
+        ...body,
+        updated_at: new Date().toISOString()
+      })
       .eq("id", params.id)
       .eq("user_id", userId)
       .select()

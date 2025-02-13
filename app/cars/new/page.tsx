@@ -10,7 +10,7 @@ export default async function NewCarPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className=" mx-auto">
       <h1 className="text-2xl font-bold mb-8">List Your Car</h1>
       <CarListingForm />
     </div>
