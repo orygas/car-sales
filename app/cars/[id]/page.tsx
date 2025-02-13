@@ -5,10 +5,12 @@ import { formatPrice } from "@/lib/utils"
 import { notFound } from "next/navigation"
 import { CarouselWrapper } from "@/components/cars/carousel-wrapper"
 import { BackButton } from "@/components/cars/back-button"
-import { Share2, Heart } from "lucide-react"
+import { Share2 } from "lucide-react"
 import { SellerInfo } from "@/components/cars/seller-info"
 import { BasicDetails } from "@/components/cars/basic-details"
 import { AdvancedDetails } from "@/components/cars/advanced-details"
+import { FavoriteButton } from "@/components/cars/favorite-button"
+import { auth } from "@clerk/nextjs/server"
 import type { Car } from "@/lib/types"
 
 async function getCarListing(id: string) {
@@ -26,6 +28,19 @@ async function getCarListing(id: string) {
   return listing as Car
 }
 
+async function isFavorited(userId: string | null, carId: string) {
+  if (!userId) return false
+
+  const { data } = await supabase
+    .from('user_favorites')
+    .select('car_id')
+    .eq('user_id', userId)
+    .eq('car_id', carId)
+    .single()
+
+  return !!data
+}
+
 export async function generateStaticParams() {
   const { data: listings } = await supabase.from('cars').select('id')
   return listings?.map((listing) => ({
@@ -35,7 +50,9 @@ export async function generateStaticParams() {
 
 export default async function CarPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
+  const { userId } = await auth()
   const listing = await getCarListing(params.id)
+  const isInitiallyFavorited = await isFavorited(userId, params.id)
 
   if (!listing) {
     notFound()
@@ -63,9 +80,10 @@ export default async function CarPage(props: { params: Promise<{ id: string }> }
                 <Button variant="outline" size="icon">
                   <Share2 className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon">
-                  <Heart className="h-4 w-4" />
-                </Button>
+                <FavoriteButton 
+                  carId={listing.id} 
+                  initialFavorited={isInitiallyFavorited}
+                />
               </div>
             </div>
           </div>

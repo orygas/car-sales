@@ -55,6 +55,17 @@ CREATE TABLE cars (
   )
 );
 
+-- Create a table for user favorites
+CREATE TABLE user_favorites (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id TEXT NOT NULL,
+  car_id UUID NOT NULL REFERENCES cars(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  
+  -- Ensure each car can only be favorited once per user
+  UNIQUE(user_id, car_id)
+);
+
 -- Create indexes for better query performance
 CREATE INDEX idx_cars_user_id ON cars(user_id);
 CREATE INDEX idx_cars_make_model ON cars(make, model);
@@ -62,6 +73,8 @@ CREATE INDEX idx_cars_price ON cars(price);
 CREATE INDEX idx_cars_year ON cars(year);
 CREATE INDEX idx_cars_created_at ON cars(created_at DESC);
 CREATE INDEX idx_cars_location ON cars(location);
+CREATE INDEX idx_user_favorites_user_id ON user_favorites(user_id);
+CREATE INDEX idx_user_favorites_car_id ON user_favorites(car_id);
 
 -- Create a function to automatically update the updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -80,6 +93,7 @@ CREATE TRIGGER update_cars_updated_at
 
 -- Set up Row Level Security (RLS)
 ALTER TABLE cars ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_favorites ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for cars table
 CREATE POLICY "Allow public read access" ON cars
@@ -87,6 +101,10 @@ CREATE POLICY "Allow public read access" ON cars
 
 -- Since we're using Clerk, we'll handle authentication in our API routes
 CREATE POLICY "Allow all operations" ON cars
+  FOR ALL USING (true);
+
+-- Create policies for user_favorites table
+CREATE POLICY "Allow all operations for user_favorites" ON user_favorites
   FOR ALL USING (true);
 
 -- Update the VIN column to be optional text with length check

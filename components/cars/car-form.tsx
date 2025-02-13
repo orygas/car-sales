@@ -380,6 +380,9 @@ export function CarListingForm() {
       const nextStepIndex = carSteps.findIndex(step => step.id === currentStep.id) + 1
       if (nextStepIndex < carSteps.length) {
         setCurrentStep(carSteps[nextStepIndex])
+        // Clear validation errors for next step's fields
+        const nextStepFields = carSteps[nextStepIndex].fields
+        form.clearErrors(nextStepFields)
       }
     }
   }
@@ -511,9 +514,12 @@ export function CarListingForm() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <div className="grid gap-6">
+                <div className="grid gap-4">
                   {currentStep.fields.map((field, index) => (
-                    <div key={`${field}-${index}`}>
+                    <div key={`${field}-${index}`} className={cn(
+                      field === "registration_number" || field === "first_registration_date" ? "col-span-1" : "col-span-2",
+                      "space-y-2"
+                    )}>
                       {/* Render form fields based on current step */}
                       {(() => {
                         switch (field) {
