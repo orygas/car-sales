@@ -38,6 +38,11 @@ import { memo } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
 import { CarFormStepper } from "./car-form-stepper"
+import { useUser } from "@clerk/nextjs"
+
+function capitalizeFirstLetter(str: string) {
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''
+}
 
 interface EUCountry {
   code: string;
@@ -251,6 +256,7 @@ const ImageUpload = memo(({ imagePreviews, onUpload, onRemove }: ImageUploadProp
 ImageUpload.displayName = "ImageUpload"
 
 export function CarListingForm() {
+  const { user } = useUser()
   const [makes, setMakes] = React.useState<Awaited<ReturnType<typeof getCarMakes>>>([])
   const [models, setModels] = React.useState<Awaited<ReturnType<typeof getCarModels>>>([])
   const [loading, setLoading] = React.useState(true)
@@ -293,6 +299,14 @@ export function CarListingForm() {
   })
 
   const { setValue, watch } = form
+
+  // Update seller name when user data is available
+  React.useEffect(() => {
+    if (user?.firstName || user?.lastName) {
+      setValue('seller_name', `${capitalizeFirstLetter(user?.firstName || '')} ${capitalizeFirstLetter(user?.lastName || '')}`.trim())
+    }
+  }, [user, setValue])
+
   const selectedMake = watch("make")
 
   const [imagePreviews, setImagePreviews] = React.useState<ImagePreview[]>([])
@@ -419,6 +433,7 @@ export function CarListingForm() {
       const formData = {
         ...data,
         images: imageUrls,
+        seller_name: `${capitalizeFirstLetter(user?.firstName || '')} ${capitalizeFirstLetter(user?.lastName || '')}`.trim(),
         vin: data.vin || null,
         condition: data.condition || "used",
         transmission: data.transmission || "manual",
@@ -1093,41 +1108,40 @@ export function CarListingForm() {
                                 )}
                               />
                             )
-                          case "seller_name":
-                            return (
-                              <FormField
-                                control={form.control}
-                                name={field}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Your Name</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="Enter your name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            )
                           case "seller_phone":
                             return (
-                              <FormField
-                                control={form.control}
-                                name={field}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Phone Number</FormLabel>
-                                    <FormControl>
-                                      <Input 
-                                        placeholder="Enter your phone number" 
-                                        type="tel"
-                                        {...field} 
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
+                              <>
+                                <div className="space-y-4">
+                                  <div>
+                                    <FormLabel>Your Name</FormLabel>
+                                    <Input 
+                                      value={`${capitalizeFirstLetter(user?.firstName || '')} ${capitalizeFirstLetter(user?.lastName || '')}`.trim()}
+                                      disabled
+                                      className="bg-muted"
+                                    />
+                                    <p className="text-sm text-muted-foreground mt-2">
+                                      This name will be displayed on your listing
+                                    </p>
+                                  </div>
+                                  <FormField
+                                    control={form.control}
+                                    name={field}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Phone Number</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="Enter your phone number" 
+                                            type="tel"
+                                            {...field} 
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                              </>
                             )
                         }
                       })()}

@@ -4,6 +4,10 @@ import { supabase } from "@/lib/supabase"
 import { CarGrid } from "@/components/cars/car-grid"
 import { ViewModeToggle } from "@/components/cars/view-mode-toggle"
 import type { Car } from "@/lib/types"
+import { Car as CarIcon } from "lucide-react"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 interface FavoriteWithCar {
   car_id: string
@@ -55,18 +59,32 @@ export default async function FavoritesPage({
         </p>
       </div>
 
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-muted-foreground">
-          Found {favorites.length} favorite {favorites.length === 1 ? 'car' : 'cars'}
-        </p>
-        <ViewModeToggle />
-      </div>
+      {favorites.length > 0 ? (
+        <>
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-sm text-muted-foreground">
+              Found {favorites.length} favorite {favorites.length === 1 ? 'listing' : 'listings'}
+            </p>
+            <ViewModeToggle />
+          </div>
 
-      <CarGrid 
-        listings={favorites} 
-        view={view}
-        favoritedCarIds={favorites.map(f => f.id)}
-      />
+          <CarGrid 
+            listings={favorites} 
+            view={view}
+          />
+        </>
+      ) : (
+        <Card className="p-6">
+          <div className="text-center py-12">
+            <CarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-semibold">No Favorites Yet</h3>
+            <p className="text-muted-foreground">Browse our listings to find your perfect car</p>
+            <Button asChild className="mt-4">
+              <Link href="/cars">Browse Listings</Link>
+            </Button>
+          </div>
+        </Card>
+      )}
     </div>
   )
 } 

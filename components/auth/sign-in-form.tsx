@@ -198,7 +198,11 @@ export function SignInForm({ className, ...props }: SignInFormProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   
+  const [identifier, setIdentifier] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -214,7 +218,7 @@ export function SignInForm({ className, ...props }: SignInFormProps) {
       setIsLoading(true);
       setError(null);
       const result = await signIn.create({
-        identifier: email,
+        identifier,
         password,
       });
 
@@ -245,7 +249,10 @@ export function SignInForm({ className, ...props }: SignInFormProps) {
 
       await signUp.create({
         emailAddress: email,
+        username,
         password,
+        firstName,
+        lastName,
       });
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
@@ -351,17 +358,16 @@ export function SignInForm({ className, ...props }: SignInFormProps) {
         <TabsContent value="sign-in" className="space-y-4">
           <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="sign-in-email">Email</Label>
+              <Label htmlFor="identifier">Email or Username</Label>
               <Input
-                id="sign-in-email"
-                placeholder="name@example.com"
-                type="email"
+                id="identifier"
+                placeholder="name@example.com or username"
+                type="text"
                 autoCapitalize="none"
-                autoComplete="email"
                 autoCorrect="off"
                 disabled={isLoading}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 required
               />
             </div>
@@ -393,6 +399,43 @@ export function SignInForm({ className, ...props }: SignInFormProps) {
 
         <TabsContent value="sign-up" className="space-y-4">
           <form onSubmit={handleSignUp} className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="first-name">First Name</Label>
+                <Input
+                  id="first-name"
+                  placeholder="John"
+                  disabled={isLoading}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="last-name">Last Name</Label>
+                <Input
+                  id="last-name"
+                  placeholder="Doe"
+                  disabled={isLoading}
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                placeholder="johndoe"
+                disabled={isLoading}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="sign-up-email">Email</Label>
               <Input

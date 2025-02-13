@@ -3,34 +3,86 @@
 import { Car } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatPrice } from "@/lib/utils"
-import { Fuel, Calendar, Gauge } from "lucide-react"
+import { Fuel, Calendar, Gauge, Pencil, Trash2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useRouter } from "next/navigation"
+import { toast } from "@/hooks/use-toast"
 
 interface CarCardProps {
   car: Car
   featured?: boolean
   listMode?: boolean
+  showActions?: boolean
 }
 
 /**
  * CarCard component - A reusable card component for displaying car listings
  * Can be used in both grid and list views, and for featured listings
  */
-export function CarCard({ car, featured, listMode }: CarCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
+export function CarCard({ car, featured, listMode, showActions }: CarCardProps) {
+  const [isDeleting, setIsDeleting] = useState(false)
+  const router = useRouter()
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true)
+      const response = await fetch(`/api/cars/${car.id}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete listing')
+      }
+
+      toast({
+        title: "Success",
+        description: "Listing deleted successfully",
+      })
+      router.refresh()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete listing",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const CardWrapper = ({ children }: { children: React.ReactNode }) => {
+    if (showActions) {
+      return children
+    }
+    return (
+      <Link href={`/cars/${car.id}`}>
+        {children}
+      </Link>
+    )
+  }
 
   return (
-    <Link href={`/cars/${car.id}`}>
+    <CardWrapper>
       <Card 
         className={cn(
-          "group h-full transition-shadow hover:shadow-lg",
+          "group h-full transition-all duration-300 hover:shadow-lg relative",
           listMode ? "grid grid-cols-[300px_1fr] overflow-hidden" : ""
         )}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         <CardContent className={cn(
           "p-0",
@@ -45,10 +97,7 @@ export function CarCard({ car, featured, listMode }: CarCardProps) {
               src={car.images[0]}
               alt={`${car.make} ${car.model}`}
               fill
-              className={cn(
-                "object-cover transition-transform duration-300",
-                isHovered ? "scale-105" : ""
-              )}
+              className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
             />
             {featured && (
               <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 text-xs font-medium rounded">
@@ -90,9 +139,47 @@ export function CarCard({ car, featured, listMode }: CarCardProps) {
                 <span className="capitalize">{car.fuel_type}</span>
               </div>
             </div>
+
+            {/* Actions */}
+            {showActions && (
+              <div className="flex items-center gap-2 mt-4 pt-4 border-t">
+                <Button variant="outline" size="sm" className="flex-1" asChild>
+                  <Link href={`/cars/${car.id}/edit`}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit
+                  </Link>
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm" className="flex-1">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your listing.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? "Deleting..." : "Delete"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
-    </Link>
+    </CardWrapper>
   )
-} 
+}

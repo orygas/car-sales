@@ -81,31 +81,45 @@ export async function PATCH(request: Request, props: { params: Promise<{ id: str
   }
 }
 
-export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { userId } = await auth();
+    const { userId } = await auth()
     if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return new NextResponse("Unauthorized", { status: 401 })
     }
 
-    const { error } = await supabaseAdmin
-      .from("cars")
+    // Get the listing to verify ownership
+    const { data: listing } = await supabase
+      .from('cars')
+      .select('user_id')
+      .eq('id', params.id)
+      .single()
+
+    if (!listing) {
+      return new NextResponse("Not found", { status: 404 })
+    }
+
+    if (listing.user_id !== userId) {
+      return new NextResponse("Unauthorized", { status: 401 })
+    }
+
+    // Delete the listing
+    const { error } = await supabase
+      .from('cars')
       .delete()
-      .eq("id", params.id)
-      .eq("user_id", userId);
+      .eq('id', params.id)
 
-    if (error) throw error;
+    if (error) {
+      console.error("Error deleting listing:", error)
+      return new NextResponse("Internal Server Error", { status: 500 })
+    }
 
-    return NextResponse.json({ success: true });
+    return new NextResponse(null, { status: 204 })
   } catch (error) {
-    console.error("Error deleting car:", error);
-    return NextResponse.json(
-      { error: "Failed to delete car" },
-      { status: 500 }
-    );
+    console.error("Error in DELETE /api/cars/[id]:", error)
+    return new NextResponse("Internal Server Error", { status: 500 })
   }
 } 
