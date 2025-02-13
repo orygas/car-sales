@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, X, Share2, Heart } from "lucide-react"
+import { ChevronLeft, ChevronRight, Share2, Heart } from "lucide-react"
 import Image from "next/image"
 import { formatPrice } from "@/lib/utils"
 import useEmblaCarousel from 'embla-carousel-react'
@@ -170,9 +170,6 @@ export function ImageDialog({
                   <p className="text-muted-foreground">{formatPrice(price)} zł</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="invisible">
-                <X className="h-4 w-4" />
-              </Button>
             </div>
             <div className="flex-1 relative overflow-hidden embla" ref={emblaRef}>
               <div className="flex h-full">
@@ -190,20 +187,20 @@ export function ImageDialog({
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white"
+                className="absolute left-0 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-none rounded-r-lg h-24"
                 onClick={previousImage}
               >
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronLeft className="h-8 w-8" />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white"
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-none rounded-l-lg h-24"
                 onClick={nextImage}
               >
-                <ChevronRight className="h-6 w-6" />
+                <ChevronRight className="h-8 w-8" />
               </Button>
-              <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
                 {currentIndex + 1} / {images.length}
               </div>
             </div>

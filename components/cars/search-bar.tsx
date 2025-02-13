@@ -149,7 +149,7 @@ export function SearchBar() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 grid grid-cols-2 gap-4">
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
@@ -310,7 +310,7 @@ export function SearchBar() {
             </Select>
           </div>
 
-          <div className="md:col-span-1">
+          <div className="col-span-2">
             <Button className="w-full" onClick={handleSearch}>Search</Button>
           </div>
         </div>

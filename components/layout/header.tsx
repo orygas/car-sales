@@ -145,7 +145,7 @@ export function Header() {
 
                 <SignedIn>
                   <div className="flex items-center gap-3 px-2 mb-2">
-                    <Avatar className="h-10 w-10">
+                    <Avatar>
                       <AvatarImage src={user?.imageUrl} alt={user?.fullName ?? user?.emailAddresses[0]?.emailAddress ?? ""} />
                       <AvatarFallback>{user?.firstName?.charAt(0) ?? user?.emailAddresses[0]?.emailAddress?.charAt(0)}</AvatarFallback>
                     </Avatar>
