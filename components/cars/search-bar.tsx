@@ -149,15 +149,17 @@ export function SearchBar() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-2 grid grid-cols-2 gap-4">
+        {/* Main filters */}
+        <div className="space-y-4">
+          {/* Make and Model selection */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className="w-full justify-between h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full justify-between"
                   disabled={loading}
                 >
                   {value
@@ -168,43 +170,30 @@ export function SearchBar() {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start" sideOffset={4}>
-                <div className="flex flex-col">
-                  <Input
-                    placeholder="Search make..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="border-0 focus-visible:ring-0"
-                  />
-                  <div className="max-h-[300px] overflow-y-auto">
-                    {filteredMakes.length === 0 ? (
-                      <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none text-muted-foreground">
-                        No make found.
-                      </div>
-                    ) : (
-                      filteredMakes.map((make) => (
-                        <div
-                          key={make.id}
-                          className={cn(
-                            "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
-                            value === make.id && "bg-accent text-accent-foreground"
-                          )}
-                          onClick={() => {
-                            setValue(value === make.id ? "" : make.id)
-                            setOpen(false)
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              value === make.id ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {make.name}
-                        </div>
-                      ))
-                    )}
-                  </div>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                <Input
+                  placeholder="Search make..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="border-0 focus-visible:ring-0"
+                />
+                <div className="max-h-[300px] overflow-y-auto">
+                  {filteredMakes.map((make) => (
+                    <div
+                      key={make.id}
+                      className={cn(
+                        "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+                        value === make.id && "bg-accent text-accent-foreground"
+                      )}
+                      onClick={() => {
+                        setValue(value === make.id ? "" : make.id)
+                        setOpen(false)
+                      }}
+                    >
+                      <Check className={cn("mr-2 h-4 w-4", value === make.id ? "opacity-100" : "opacity-0")} />
+                      {make.name}
+                    </div>
+                  ))}
                 </div>
               </PopoverContent>
             </Popover>
@@ -215,7 +204,7 @@ export function SearchBar() {
                   variant="outline"
                   role="combobox"
                   aria-expanded={modelOpen}
-                  className="w-full justify-between h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full justify-between"
                   disabled={!value || modelLoading}
                 >
                   {modelValue
@@ -228,58 +217,44 @@ export function SearchBar() {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start" sideOffset={4}>
-                <div className="flex flex-col">
-                  <Input
-                    placeholder="Search model..."
-                    value={modelSearch}
-                    onChange={(e) => setModelSearch(e.target.value)}
-                    className="border-0 focus-visible:ring-0"
-                  />
-                  <div className="max-h-[300px] overflow-y-auto">
-                    {filteredModels.length === 0 ? (
-                      <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none text-muted-foreground">
-                        No model found.
-                      </div>
-                    ) : (
-                      filteredModels.map((model) => (
-                        <div
-                          key={model.id}
-                          className={cn(
-                            "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
-                            modelValue === model.id && "bg-accent text-accent-foreground"
-                          )}
-                          onClick={() => {
-                            setModelValue(modelValue === model.id ? "" : model.id)
-                            setModelOpen(false)
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              modelValue === model.id ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {model.name}
-                        </div>
-                      ))
-                    )}
-                  </div>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                <Input
+                  placeholder="Search model..."
+                  value={modelSearch}
+                  onChange={(e) => setModelSearch(e.target.value)}
+                  className="border-0 focus-visible:ring-0"
+                />
+                <div className="max-h-[300px] overflow-y-auto">
+                  {filteredModels.map((model) => (
+                    <div
+                      key={model.id}
+                      className={cn(
+                        "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+                        modelValue === model.id && "bg-accent text-accent-foreground"
+                      )}
+                      onClick={() => {
+                        setModelValue(modelValue === model.id ? "" : model.id)
+                        setModelOpen(false)
+                      }}
+                    >
+                      <Check className={cn("mr-2 h-4 w-4", modelValue === model.id ? "opacity-100" : "opacity-0")} />
+                      {model.name}
+                    </div>
+                  ))}
                 </div>
               </PopoverContent>
             </Popover>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 col-span-2 gap-4">
+          {/* Secondary filters */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Select value={yearFrom} onValueChange={setYearFrom}>
               <SelectTrigger>
                 <SelectValue placeholder="Year From" />
               </SelectTrigger>
               <SelectContent>
                 {years.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
+                  <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -310,32 +285,31 @@ export function SearchBar() {
             </Select>
           </div>
 
-          <div className="col-span-2">
-            <Button className="w-full" onClick={handleSearch}>Search</Button>
+          {/* Action buttons */}
+          <div className="space-y-2">
+            <Button className="w-full" onClick={handleSearch}>
+              Search
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+            >
+              {showAdvanced ? "Hide" : "Show"} Advanced Filters
+              {showAdvanced ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
+            </Button>
           </div>
-        </div>
 
-        <div>
-          <Button
-            variant="ghost"
-            className="w-full flex items-center justify-center gap-2"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-          >
-            {showAdvanced ? "Hide" : "Show"} Advanced Filters
-            {showAdvanced ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </Button>
-
+          {/* Advanced filters */}
           {showAdvanced && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Select value={yearTo} onValueChange={setYearTo}>
                 <SelectTrigger>
                   <SelectValue placeholder="Year To" />
                 </SelectTrigger>
                 <SelectContent>
                   {years.map((year) => (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year}
-                    </SelectItem>
+                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -376,7 +350,7 @@ export function SearchBar() {
                 </SelectContent>
               </Select>
 
-              <div className="md:col-span-4">
+              <div className="md:col-span-2 lg:col-span-4">
                 <Input 
                   placeholder="Search by keyword..." 
                   value={keyword}
