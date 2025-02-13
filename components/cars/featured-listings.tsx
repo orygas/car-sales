@@ -3,28 +3,12 @@
 import { CardHeader, CardTitle } from "@/components/ui/card"
 import { CarCard } from "@/components/cars/car-card"
 import type { Car } from "@/lib/types"
-import { useState } from "react"
 
 interface FeaturedListingsProps {
   listings: Car[]
-  initialFavorites: Set<string>
 }
 
-export function FeaturedListings({ listings, initialFavorites }: FeaturedListingsProps) {
-  const [favorites, setFavorites] = useState(initialFavorites)
-
-  const handleFavoriteChange = (carId: string, isFavorited: boolean) => {
-    setFavorites(prev => {
-      const next = new Set(prev)
-      if (isFavorited) {
-        next.add(carId)
-      } else {
-        next.delete(carId)
-      }
-      return next
-    })
-  }
-
+export function FeaturedListings({ listings }: FeaturedListingsProps) {
   return (
     <div>
       <CardHeader className="px-0">
@@ -36,8 +20,6 @@ export function FeaturedListings({ listings, initialFavorites }: FeaturedListing
             key={listing.id} 
             car={listing} 
             featured={true}
-            isFavorited={favorites.has(listing.id)}
-            onFavoriteChange={handleFavoriteChange}
           />
         ))}
       </div>

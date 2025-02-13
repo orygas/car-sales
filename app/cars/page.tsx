@@ -22,39 +22,29 @@ async function getCarListings(params: SearchParams) {
   const page = Number(searchParams?.page) || 1
   const from = (page - 1) * ITEMS_PER_PAGE
   
-  // First get the total count
-  const { count } = await supabase
-    .from('cars')
-    .select('*', { count: 'exact', head: true })
+  // Build the query with filters
+  const baseQuery = supabase.from('cars').select('*', { count: 'exact' })
 
-  // Then get the paginated results with filters
-  const baseQuery = supabase.from('cars').select('*')
-  const filters = {
-    make: (v: string) => baseQuery.eq('make', v),
-    model: (v: string) => baseQuery.eq('model', v),
-    yearFrom: (v: string) => baseQuery.gte('year', parseInt(v)),
-    yearTo: (v: string) => baseQuery.lte('year', parseInt(v)),
-    transmission: (v: string) => baseQuery.eq('transmission', v),
-    fuelType: (v: string) => baseQuery.eq('fuel_type', v),
-    mileageFrom: (v: string) => baseQuery.gte('mileage', parseInt(v)),
-    mileageTo: (v: string) => baseQuery.lte('mileage', parseInt(v)),
-    priceRange: (v: string) => {
-      const [min, max] = v.split('-')
-      if (min) baseQuery.gte('price', parseInt(min))
-      if (max && max !== '+') baseQuery.lte('price', parseInt(max))
-      return baseQuery
-    },
-    keyword: (v: string) => baseQuery.or(`description.ilike.%${v}%,make.ilike.%${v}%,model.ilike.%${v}%`)
+  // Apply filters
+  if (searchParams.make) baseQuery.eq('make', searchParams.make)
+  if (searchParams.model) baseQuery.eq('model', searchParams.model)
+  if (searchParams.yearFrom) baseQuery.gte('year', parseInt(searchParams.yearFrom as string))
+  if (searchParams.yearTo) baseQuery.lte('year', parseInt(searchParams.yearTo as string))
+  if (searchParams.transmission) baseQuery.eq('transmission', searchParams.transmission)
+  if (searchParams.fuelType) baseQuery.eq('fuel_type', searchParams.fuelType)
+  if (searchParams.mileageFrom) baseQuery.gte('mileage', parseInt(searchParams.mileageFrom as string))
+  if (searchParams.mileageTo) baseQuery.lte('mileage', parseInt(searchParams.mileageTo as string))
+  if (searchParams.priceRange) {
+    const [min, max] = (searchParams.priceRange as string).split('-')
+    if (min) baseQuery.gte('price', parseInt(min))
+    if (max && max !== '+') baseQuery.lte('price', parseInt(max))
+  }
+  if (searchParams.keyword) {
+    baseQuery.or(`description.ilike.%${searchParams.keyword}%,make.ilike.%${searchParams.keyword}%,model.ilike.%${searchParams.keyword}%`)
   }
 
-  const entries = Object.entries(searchParams)
-  for (const [key, value] of entries) {
-    if (value && key in filters) {
-      filters[key as keyof typeof filters](value as string)
-    }
-  }
-
-  const { data: listings, error } = await baseQuery
+  // Get the count and paginated results
+  const { data: listings, error, count } = await baseQuery
     .order('created_at', { ascending: false })
     .range(from, from + ITEMS_PER_PAGE - 1)
 
@@ -106,13 +96,20 @@ function CarsPageClient({
 
   return (
     <div className="container py-6">
+      <div className="mb-10 space-y-2">
+        <h1 className="text-4xl font-bold">Browse Cars</h1>
+        <p className="text-xl text-muted-foreground">
+          Find your next car from our extensive collection
+        </p>
+      </div>
+
       <div className="mb-8">
         <SearchBar />
       </div>
 
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm text-muted-foreground">
-          Found {totalCount} {totalCount === 1 ? 'car' : 'cars'}
+          Found {totalCount} {totalCount === 1 ? 'listing' : 'listings'}
         </p>
         <ViewModeToggle />
       </div>

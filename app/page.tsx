@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server"
 import { supabase } from "@/lib/supabase"
 import { FeaturedListings } from "@/components/cars/featured-listings"
 import { SearchBar } from "@/components/cars/search-bar"
+import { PopularBrands } from "@/components/cars/popular-brands"
 import type { Car } from "@/lib/types"
 
 async function getFeaturedListings() {
@@ -32,17 +33,32 @@ async function getFavorites(userId: string | null) {
 
 export default async function HomePage() {
   const { userId } = await auth()
-  const [listings, favoritedCars] = await Promise.all([
+  const [listings] = await Promise.all([
     getFeaturedListings(),
     getFavorites(userId)
   ])
 
   return (
     <main className="container py-6">
+      <div className="mb-10 space-y-2">
+        <h1 className="text-4xl font-bold">Welcome to Auto Market</h1>
+        <p className="text-xl text-muted-foreground">
+          Find your perfect car from thousands of listings
+        </p>
+      </div>
+
       <div className="mb-10">
         <SearchBar />
       </div>
-      <FeaturedListings listings={listings} initialFavorites={favoritedCars} />
+
+      <div className="space-y-10">
+        <FeaturedListings listings={listings} />
+        
+        <div>
+          <h2 className="text-2xl font-bold mb-6">Popular Brands</h2>
+          <PopularBrands />
+        </div>
+      </div>
     </main>
   )
 }

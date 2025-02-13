@@ -5,21 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Heart } from "lucide-react"
 import { useAuth } from "@clerk/nextjs"
 import { toast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
 
 interface FavoriteButtonProps {
   carId: string
   initialFavorited: boolean
-  variant?: "ghost" | "outline"
-  withBackground?: boolean
 }
 
-export function FavoriteButton({ 
-  carId, 
-  initialFavorited, 
-  variant = "outline",
-  withBackground = false 
-}: FavoriteButtonProps) {
+export function FavoriteButton({ carId, initialFavorited }: FavoriteButtonProps) {
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
   const [isLoading, setIsLoading] = useState(false)
   const { userId } = useAuth()
@@ -70,12 +62,9 @@ export function FavoriteButton({
 
   return (
     <Button
-      variant={variant}
+      variant="outline"
       size="icon"
-      className={cn(
-        isFavorited ? "text-destructive" : "",
-        withBackground && "bg-background/70 hover:bg-background/90 backdrop-blur-sm"
-      )}
+      className={isFavorited ? "text-destructive" : ""}
       onClick={handleFavoriteClick}
       disabled={isLoading}
     >

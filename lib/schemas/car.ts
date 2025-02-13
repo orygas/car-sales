@@ -49,7 +49,24 @@ export const carSchema = z.object({
         message: "First registration date is required when the car is registered",
         path: ["first_registration_date"]
       });
+    } else {
+      const registrationYear = new Date(data.first_registration_date).getFullYear()
+      if (registrationYear < data.year) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "First registration date cannot be earlier than the car's make year",
+          path: ["first_registration_date"]
+        });
+      }
     }
+  }
+
+  if (data.is_imported && !data.import_country) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Import country is required when the car is imported",
+      path: ["import_country"]
+    });
   }
 });
 
@@ -98,16 +115,16 @@ export const carSteps = [
     fields: ["price", "location", "description"],
   },
   {
-    id: "images",
-    title: "Images",
-    description: "Upload images of your vehicle",
-    fields: ["images"],
-  },
-  {
     id: "seller",
     title: "Seller Information",
     description: "Your contact information",
     fields: ["seller_name", "seller_phone"],
+  },
+  {
+    id: "images",
+    title: "Images",
+    description: "Upload images of your vehicle",
+    fields: ["images"],
   },
 ] as const
 

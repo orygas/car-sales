@@ -5,7 +5,12 @@ import { CarGrid } from "@/components/cars/car-grid"
 import { ViewModeToggle } from "@/components/cars/view-mode-toggle"
 import type { Car } from "@/lib/types"
 
-async function getFavorites() {
+interface FavoriteWithCar {
+  car_id: string
+  cars: Car
+}
+
+async function getFavorites(): Promise<Car[]> {
   const { userId } = await auth()
   if (!userId) return []
 
@@ -23,29 +28,37 @@ async function getFavorites() {
     return []
   }
 
-  return favorites.map(f => f.cars) as Car[]
+  return (favorites as unknown as FavoriteWithCar[]).map(f => f.cars)
 }
 
 export default async function FavoritesPage({
-  searchParams
+  searchParams,
 }: {
-  searchParams: { view?: string }
+  searchParams: Promise<{ view?: string }> | { view?: string }
 }) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const favorites = await getFavorites()
-  const view = (searchParams.view as "grid" | "list") || "grid"
+  const [favorites, params] = await Promise.all([
+    getFavorites(),
+    Promise.resolve(searchParams)
+  ])
+  
+  const view = (params.view as "grid" | "list") || "grid"
 
   return (
     <div className="container py-6">
+      <div className="mb-10 space-y-2">
+        <h1 className="text-4xl font-bold">My Favorites</h1>
+        <p className="text-xl text-muted-foreground">
+          Cars you&apos;ve saved for later
+        </p>
+      </div>
+
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">My Favorites</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Found {favorites.length} favorite {favorites.length === 1 ? 'car' : 'cars'}
-          </p>
-        </div>
+        <p className="text-sm text-muted-foreground">
+          Found {favorites.length} favorite {favorites.length === 1 ? 'car' : 'cars'}
+        </p>
         <ViewModeToggle />
       </div>
 

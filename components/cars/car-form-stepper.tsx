@@ -43,22 +43,33 @@ export function CarFormStepper({
       return
     }
 
-    // Validate current step before proceeding to next step
-    if (targetStepIndex === currentStepIndex + 1) {
-      const currentFields = currentStep.fields
-      const result = await form.trigger(currentFields)
-      
+    // For the images step (now the final step), validate all fields
+    if (currentStep.id === "images") {
+      const result = await form.trigger()
       if (!result) {
         toast({
-          title: "Please complete the current step",
-          description: "Fill in all required fields before proceeding.",
+          title: "Please complete all required fields",
+          description: "Fill in all required fields before submitting.",
           variant: "destructive",
         })
         return
       }
-
-      setCurrentStep(step)
     }
+
+    // For the seller step, validate seller information
+    if (currentStep.id === "seller" && targetStepIndex === currentStepIndex + 1) {
+      const result = await form.trigger(["seller_name", "seller_phone"])
+      if (!result) {
+        toast({
+          title: "Seller Information Required",
+          description: "Please provide your name and phone number.",
+          variant: "destructive",
+        })
+        return
+      }
+    }
+
+    setCurrentStep(step)
   }
 
   const progress = Math.round((completedSteps.size / carSteps.length) * 100)

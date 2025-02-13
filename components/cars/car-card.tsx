@@ -8,20 +8,18 @@ import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
-import { FavoriteButton } from "./favorite-button"
 
 interface CarCardProps {
   car: Car
   featured?: boolean
   listMode?: boolean
-  isFavorited?: boolean
 }
 
 /**
  * CarCard component - A reusable card component for displaying car listings
  * Can be used in both grid and list views, and for featured listings
  */
-export function CarCard({ car, featured, listMode, isFavorited = false }: CarCardProps) {
+export function CarCard({ car, featured, listMode }: CarCardProps) {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
@@ -41,7 +39,7 @@ export function CarCard({ car, featured, listMode, isFavorited = false }: CarCar
           {/* Image container */}
           <div className={cn(
             "relative overflow-hidden",
-            listMode ? "h-full" : "aspect-video rounded-t-lg"
+            listMode ? "h-full" : "aspect-[4/3] rounded-t-lg"
           )}>
             <Image
               src={car.images[0]}
@@ -52,14 +50,6 @@ export function CarCard({ car, featured, listMode, isFavorited = false }: CarCar
                 isHovered ? "scale-105" : ""
               )}
             />
-            <div className="absolute top-2 right-2">
-              <FavoriteButton
-                carId={car.id}
-                initialFavorited={isFavorited}
-                variant="ghost"
-                withBackground
-              />
-            </div>
             {featured && (
               <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 text-xs font-medium rounded">
                 Featured
@@ -69,15 +59,16 @@ export function CarCard({ car, featured, listMode, isFavorited = false }: CarCar
 
           {/* Content */}
           <div className={cn(
-            "flex flex-col h-[120px]",
+            "flex flex-col",
             listMode ? "p-6" : "p-4"
           )}>
             {/* Title and price */}
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start justify-between gap-4 mb-2">
               <div className="min-w-0 flex-1">
                 <h3 className="font-semibold truncate">
                   {car.make.toUpperCase()} {car.model.toUpperCase()}
                 </h3>
+                <p className="text-sm text-muted-foreground">{car.location}</p>
               </div>
               <p className="font-bold whitespace-nowrap">
                 {formatPrice(car.price)} zł
@@ -85,7 +76,7 @@ export function CarCard({ car, featured, listMode, isFavorited = false }: CarCar
             </div>
 
             {/* Additional details */}
-            <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4 flex-shrink-0" />
                 <span>{car.year}</span>

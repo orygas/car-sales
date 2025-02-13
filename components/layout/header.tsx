@@ -29,7 +29,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, Settings, LogOut, Menu, PlusCircle } from "lucide-react"
+import { User, LogOut, Menu, PlusCircle, Heart } from "lucide-react"
 
 export function Header() {
   const { user } = useUser();
@@ -84,12 +84,6 @@ export function Header() {
                     Profile
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="flex items-center">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <SignOutButton>
@@ -101,6 +95,13 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Button asChild variant="outline">
+              <Link href="/favorites" className="flex items-center gap-2">
+                <Heart className="h-4 w-4" />
+                Favorites
+              </Link>
+            </Button>
 
             <Button asChild variant="default">
               <Link href="/cars/new">Sell Your Car</Link>
@@ -161,9 +162,9 @@ export function Header() {
                     </Link>
                   </Button>
                   <Button asChild variant="ghost" className="w-full justify-start">
-                    <Link href="/settings">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                    <Link href="/favorites">
+                      <Heart className="mr-2 h-4 w-4" />
+                      Favorites
                     </Link>
                   </Button>
                   <SignOutButton>
