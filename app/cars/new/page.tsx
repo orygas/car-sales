@@ -10,9 +10,14 @@ export default async function NewCarPage() {
   }
 
   return (
-    <div className=" mx-auto">
-      <h1 className="text-2xl font-bold mb-8">List Your Car</h1>
+    <div className="container py-6">
+      <div className="mb-10 space-y-2">
+        <h1 className="text-4xl font-bold">Create Listing</h1>
+        <p className="text-xl text-muted-foreground">
+          List your car for sale on Auto Market
+        </p>
+      </div>
       <CarListingForm />
     </div>
   );
-} 
+}
