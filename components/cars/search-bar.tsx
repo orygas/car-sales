@@ -74,6 +74,8 @@ export function SearchBar() {
       try {
         const data = await getCarModels(value)
         setModels(data)
+        // Reset model value when make changes
+        setModelValue("")
       } catch (error) {
         console.error("Failed to fetch car models:", error)
       } finally {

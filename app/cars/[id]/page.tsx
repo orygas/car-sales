@@ -1,17 +1,17 @@
 import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { supabase } from "@/lib/supabase"
 import { formatPrice } from "@/lib/utils"
 import { notFound } from "next/navigation"
 import { CarouselWrapper } from "@/components/cars/carousel-wrapper"
 import { BackButton } from "@/components/cars/back-button"
-import { Share2 } from "lucide-react"
 import { SellerInfo } from "@/components/cars/seller-info"
 import { BasicDetails } from "@/components/cars/basic-details"
 import { AdvancedDetails } from "@/components/cars/advanced-details"
 import { FavoriteButton } from "@/components/cars/favorite-button"
 import { auth } from "@clerk/nextjs/server"
 import type { Car } from "@/lib/types"
+import { ShareButton } from "@/components/cars/share-button"
+import { Metadata } from "next"
 
 async function getCarListing(id: string) {
   const { data: listing, error } = await supabase
@@ -48,6 +48,23 @@ export async function generateStaticParams() {
   })) || []
 }
 
+export async function generateMetadata(
+  props: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+  const params = await props.params
+  const listing = await getCarListing(params.id)
+
+  if (!listing) {
+    return {
+      title: "Car Not Found - Auto Market"
+    }
+  }
+
+  return {
+    title: `${listing.make.toUpperCase()} ${listing.model.toUpperCase()} - ${listing.mileage.toLocaleString()} km, ${listing.price.toLocaleString()} zł - Auto Market`
+  }
+}
+
 export default async function CarPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const { userId } = await auth()
@@ -77,9 +94,7 @@ export default async function CarPage(props: { params: Promise<{ id: string }> }
                 {formatPrice(listing.price)} zł
               </p>
               <div className="flex gap-2">
-                <Button variant="outline" size="icon">
-                  <Share2 className="h-4 w-4" />
-                </Button>
+                <ShareButton />
                 <FavoriteButton 
                   carId={listing.id} 
                   initialFavorited={isInitiallyFavorited}
@@ -96,6 +111,7 @@ export default async function CarPage(props: { params: Promise<{ id: string }> }
             make={listing.make} 
             model={listing.model}
             price={listing.price}
+            carId={listing.id}
           />
         </Card>
 
@@ -105,7 +121,7 @@ export default async function CarPage(props: { params: Promise<{ id: string }> }
         {/* Description */}
         <Card className="p-4 sm:p-6">
           <h2 className="text-lg font-semibold mb-4">Description</h2>
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{listing.description}</p>
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words break-all">{listing.description}</p>
         </Card>
 
         {/* Advanced Details and Seller Info */}

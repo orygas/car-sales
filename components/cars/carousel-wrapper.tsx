@@ -12,13 +12,14 @@ interface CarouselWrapperProps {
   make: string
   model: string
   price: number
+  carId: string
 }
 
 export function CarouselWrapper({ 
   images, 
   make, 
   model, 
-  price 
+  price,
 }: CarouselWrapperProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })

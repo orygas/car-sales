@@ -39,6 +39,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
 import { CarFormStepper } from "./car-form-stepper"
 import { useUser } from "@clerk/nextjs"
+import { getLocationSuggestions, LocationSuggestion } from "@/lib/utils"
 
 function capitalizeFirstLetter(str: string) {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''
@@ -264,6 +265,10 @@ export function CarListingForm() {
   const [openMake, setOpenMake] = React.useState(false)
   const [makeSearch, setMakeSearch] = React.useState("")
   const [submitting, setSubmitting] = React.useState(false)
+  const [locationSuggestions, setLocationSuggestions] = React.useState<LocationSuggestion[]>([])
+  const [showLocationSuggestions, setShowLocationSuggestions] = React.useState(false)
+  const [locationSelected, setLocationSelected] = React.useState(false)
+  const locationRef = React.useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   const form = useForm<CarListing>({
@@ -383,7 +388,7 @@ export function CarListingForm() {
     if (savedCompletedSteps) {
       setCompletedSteps(new Set(JSON.parse(savedCompletedSteps)))
     }
-  }, [])
+  }, [form])
 
   const onNext = async () => {
     const currentFields = currentStep.fields
@@ -509,6 +514,18 @@ export function CarListingForm() {
     const currentImages = watch('images') || []
     setValue('images', currentImages.filter((_, i) => i !== index))
   }
+
+  // Handle click outside location suggestions
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (locationRef.current && !locationRef.current.contains(event.target as Node)) {
+        setShowLocationSuggestions(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   return (
     <div className="container py-6">
@@ -660,10 +677,109 @@ export function CarListingForm() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Location</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="City, Country" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
+                                    <div className="relative" ref={locationRef}>
+                                      <FormControl>
+                                        <div className="relative">
+                                          <Input 
+                                            placeholder="City, Country" 
+                                            {...field}
+                                            readOnly={locationSelected && !showLocationSuggestions}
+                                            onChange={async (e) => {
+                                              setLocationSelected(false);
+                                              field.onChange(e.target.value);
+                                              form.setError("location", {
+                                                type: "manual",
+                                                message: "Please select a location from the suggestions"
+                                              });
+                                              if (e.target.value.length >= 3) {
+                                                setLocationSuggestions([]);
+                                                setShowLocationSuggestions(true);
+                                                const suggestions = await getLocationSuggestions(e.target.value);
+                                                setLocationSuggestions(suggestions);
+                                              } else {
+                                                setLocationSuggestions([]);
+                                                setShowLocationSuggestions(false);
+                                              }
+                                            }}
+                                            onFocus={() => {
+                                              if (!locationSelected) {
+                                                form.setError("location", {
+                                                  type: "manual",
+                                                  message: "Please select a location from the suggestions"
+                                                });
+                                              }
+                                              if (locationSuggestions.length > 0) {
+                                                setShowLocationSuggestions(true);
+                                              }
+                                            }}
+                                            className={cn(
+                                              locationSelected && !showLocationSuggestions && "pr-12",
+                                              locationSelected && !showLocationSuggestions && "bg-muted"
+                                            )}
+                                          />
+                                          {locationSelected && !showLocationSuggestions && (
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="sm"
+                                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                              onClick={() => {
+                                                field.onChange("");
+                                                setLocationSuggestions([]);
+                                                setShowLocationSuggestions(false);
+                                                setLocationSelected(false);
+                                                form.setError("location", {
+                                                  type: "manual",
+                                                  message: "Please select a location from the suggestions"
+                                                });
+                                              }}
+                                            >
+                                              <X className="h-4 w-4" />
+                                              <span className="sr-only">Clear location</span>
+                                            </Button>
+                                          )}
+                                        </div>
+                                      </FormControl>
+                                      {showLocationSuggestions && (
+                                        <div className="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg overflow-hidden">
+                                          {locationSuggestions.length === 0 ? (
+                                            <div className="px-3 py-2 text-sm text-muted-foreground">
+                                              {field.value.length >= 3 ? (
+                                                <div className="flex items-center gap-2">
+                                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                                  Loading suggestions...
+                                                </div>
+                                              ) : (
+                                                "Type at least 3 characters to search"
+                                              )}
+                                            </div>
+                                          ) : (
+                                            locationSuggestions.map((suggestion, index) => (
+                                              <div
+                                                key={index}
+                                                className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center justify-between text-sm"
+                                                onClick={() => {
+                                                  field.onChange(suggestion.formatted_location);
+                                                  setShowLocationSuggestions(false);
+                                                  setLocationSuggestions([]);
+                                                  setLocationSelected(true);
+                                                  form.clearErrors("location");
+                                                }}
+                                              >
+                                                <span className="font-medium">{suggestion.city || suggestion.country}</span>
+                                                <span className="text-muted-foreground">{suggestion.country}</span>
+                                              </div>
+                                            ))
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <FormDescription>
+                                      Enter a city name to get location suggestions from EU countries
+                                    </FormDescription>
+                                    <FormMessage>
+                                      {!locationSelected && field.value && "Please select a location from the suggestions"}
+                                    </FormMessage>
                                   </FormItem>
                                 )}
                               />

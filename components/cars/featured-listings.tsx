@@ -14,8 +14,8 @@ export function FeaturedListings({ listings }: FeaturedListingsProps) {
       <CardHeader className="px-0">
         <CardTitle className="text-2xl">Featured Listings</CardTitle>
       </CardHeader>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {listings.map((listing) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {listings.slice(0, 3).map((listing) => (
           <CarCard 
             key={listing.id} 
             car={listing} 

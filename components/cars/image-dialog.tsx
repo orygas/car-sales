@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Share2, Heart } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { formatPrice } from "@/lib/utils"
 import useEmblaCarousel from 'embla-carousel-react'
@@ -21,7 +21,7 @@ export function ImageDialog({
   images, 
   make, 
   model, 
-  price, 
+  price,
   initialIndex = 0,
   children 
 }: ImageDialogProps) {
@@ -81,32 +81,25 @@ export function ImageDialog({
         }}
       >
         {isMobile ? (
-          // Mobile Layout
           <>
             {isGridView ? (
               <div className="h-[100dvh] overflow-y-auto">
                 <div className="sticky top-0 z-10 flex flex-col bg-background/95 backdrop-blur supports-[height:100dvh]:pt-[env(safe-area-inset-top)]">
-                  <div className="flex items-center justify-between p-4">
-                    <DialogClose asChild>
-                      <Button variant="ghost" size="icon" className="text-foreground">
-                        <ChevronLeft className="h-5 w-5" />
-                      </Button>
-                    </DialogClose>
-                    <div className="flex items-center gap-4">
-                      <Button variant="ghost" size="icon">
-                        <Share2 className="h-5 w-5" />
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <Heart className="h-5 w-5" />
-                      </Button>
+                  <div className="p-4">
+                    <div className="flex items-center gap-4 mb-2">
+                      <DialogClose asChild>
+                        <Button variant="ghost" size="icon" className="text-foreground">
+                          <ChevronLeft className="h-5 w-5" />
+                        </Button>
+                      </DialogClose>
+                      <div className="flex-1 flex justify-between items-center">
+                        <h2 className="text-lg font-semibold">{make.toUpperCase()} {model.toUpperCase()}</h2>
+                        <p className="text-xl font-bold text-primary">{formatPrice(price)} zł</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="px-4 pb-4">
-                    <h2 className="text-lg font-semibold">{make} {model}</h2>
-                    <p className="text-xl font-bold">{formatPrice(price)} PLN</p>
-                  </div>
                 </div>
-                <div className="grid grid-cols-1 gap-2 p-4 supports-[height:100dvh]:pb-[env(safe-area-inset-bottom)]">
+                <div className="grid grid-cols-1 gap-2 p-4 supports-[height:100dvh]:pb-[env(safe-area-inset-bottom)] mb-6">
                   {images.map((image, index) => (
                     <div
                       key={image}
@@ -124,13 +117,13 @@ export function ImageDialog({
                 </div>
               </div>
             ) : (
-              <div className="relative h-[100dvh] flex flex-col bg-black">
-                <div className="absolute supports-[height:100dvh]:top-[env(safe-area-inset-top)] left-4 z-10">
+              <div className="relative h-[100dvh] flex flex-col bg-background">
+                <div className="absolute supports-[height:100dvh]:top-[env(safe-area-inset-top)] m-4 z-10">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsGridView(true)}
-                    className="text-white"
+                    className="text-foreground bg-background/50 hover:bg-background/70 backdrop-blur-sm"
                   >
                     <ChevronLeft className="h-6 w-6" />
                   </Button>
@@ -149,26 +142,27 @@ export function ImageDialog({
                     ))}
                   </div>
                 </div>
-                <div className="absolute supports-[height:100dvh]:bottom-[env(safe-area-inset-bottom)] right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-primary/5 text-foreground px-4 py-2 rounded-full text-sm backdrop-blur-sm">
                   {currentIndex + 1} / {images.length}
                 </div>
               </div>
             )}
           </>
         ) : (
-          // Desktop Layout
           <div className="relative h-full flex flex-col">
-            <div className="flex items-center justify-between p-4 bg-background/95 backdrop-blur">
-              <div className="flex items-center gap-4">
-                <DialogClose asChild>
-                  <Button variant="ghost" size="icon" className="text-foreground">
-                    <ChevronLeft className="h-5 w-5" />
-                  </Button>
-                </DialogClose>
-                <div>
-                  <h2 className="text-lg font-semibold uppercase">{make} {model}</h2>
-                  <p className="text-muted-foreground">{formatPrice(price)} zł</p>
-                </div>
+            <div className="flex items-center p-4 bg-background/95 backdrop-blur">
+              <DialogClose asChild>
+                <Button variant="ghost" size="icon" className="text-foreground mr-4">
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+              </DialogClose>
+              <div>
+                <h2 className="text-lg font-semibold">
+                  {make.toUpperCase()} {model.toUpperCase()}
+                </h2>
+                <p className="text-xl font-bold text-primary">
+                  {formatPrice(price)} zł
+                </p>
               </div>
             </div>
             <div className="flex-1 relative overflow-hidden embla" ref={emblaRef}>

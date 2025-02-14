@@ -81,7 +81,7 @@ export function CarCard({ car, featured, listMode, showActions }: CarCardProps) 
       <Card 
         className={cn(
           "group h-full transition-all duration-300 hover:shadow-lg relative",
-          listMode ? "grid grid-cols-[300px_1fr] overflow-hidden" : ""
+          listMode ? "grid grid-cols-[120px_1fr] sm:grid-cols-[200px_1fr] md:grid-cols-[300px_1fr] overflow-hidden" : ""
         )}
       >
         <CardContent className={cn(
@@ -91,13 +91,18 @@ export function CarCard({ car, featured, listMode, showActions }: CarCardProps) 
           {/* Image container */}
           <div className={cn(
             "relative overflow-hidden",
-            listMode ? "h-full" : "aspect-[4/3] rounded-t-lg"
+            listMode 
+              ? "h-full w-full" 
+              : "aspect-[4/3] rounded-t-lg"
           )}>
             <Image
               src={car.images[0]}
               alt={`${car.make} ${car.model}`}
               fill
-              className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+              className={cn(
+                "object-cover transition-transform duration-300 ease-in-out",
+                listMode ? "group-hover:scale-110" : "group-hover:scale-105"
+              )}
             />
             {featured && (
               <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 text-xs font-medium rounded">
@@ -109,33 +114,57 @@ export function CarCard({ car, featured, listMode, showActions }: CarCardProps) 
           {/* Content */}
           <div className={cn(
             "flex flex-col",
-            listMode ? "p-6" : "p-4"
+            listMode ? "p-3 sm:p-4 md:p-6" : "p-4"
           )}>
             {/* Title and price */}
-            <div className="flex items-start justify-between gap-4 mb-2">
+            <div className="flex items-start justify-between gap-2 sm:gap-4 mb-2">
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold truncate">
+                <h3 className={cn(
+                  "font-semibold truncate",
+                  listMode ? "text-sm sm:text-base" : "text-base"
+                )}>
                   {car.make.toUpperCase()} {car.model.toUpperCase()}
                 </h3>
-                <p className="text-sm text-muted-foreground">{car.location}</p>
+                <p className={cn(
+                  "text-muted-foreground truncate",
+                  listMode ? "text-xs sm:text-sm" : "text-sm"
+                )}>
+                  {car.location}
+                </p>
               </div>
-              <p className="font-bold whitespace-nowrap">
+              <p className={cn(
+                "font-bold whitespace-nowrap",
+                listMode ? "text-sm sm:text-base" : "text-base"
+              )}>
                 {formatPrice(car.price)} zł
               </p>
             </div>
 
             {/* Additional details */}
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4 flex-shrink-0" />
+            <div className={cn(
+              "flex flex-wrap items-center",
+              listMode ? "text-xs sm:text-sm mt-1" : "text-sm mt-2",
+              listMode ? "gap-x-2 gap-y-1 sm:gap-4" : "gap-4"
+            )}>
+              <div className="flex items-center gap-1 min-w-[70px] sm:min-w-0">
+                <Calendar className={cn(
+                  "flex-shrink-0",
+                  listMode ? "h-3 w-3 sm:h-4 sm:w-4" : "h-4 w-4"
+                )} />
                 <span>{car.year}</span>
               </div>
               <div className="flex items-center gap-1">
-                <Gauge className="h-4 w-4 flex-shrink-0" />
+                <Gauge className={cn(
+                  "flex-shrink-0",
+                  listMode ? "h-3 w-3 sm:h-4 sm:w-4" : "h-4 w-4"
+                )} />
                 <span>{car.mileage.toLocaleString()} km</span>
               </div>
               <div className="flex items-center gap-1">
-                <Fuel className="h-4 w-4 flex-shrink-0" />
+                <Fuel className={cn(
+                  "flex-shrink-0",
+                  listMode ? "h-3 w-3 sm:h-4 sm:w-4" : "h-4 w-4"
+                )} />
                 <span className="capitalize">{car.fuel_type}</span>
               </div>
             </div>
@@ -143,11 +172,20 @@ export function CarCard({ car, featured, listMode, showActions }: CarCardProps) 
             {/* Actions */}
             {showActions && (
               <div className="flex items-center gap-2 mt-4 pt-4 border-t">
-                <Button variant="outline" size="sm" className="flex-1" asChild>
-                  <Link href={`/cars/${car.id}/edit`}>
-                    <Pencil className="h-4 w-4 mr-2" />
-                    Edit
-                  </Link>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1"
+                  onClick={() => {
+                    toast({
+                      title: "Not Implemented",
+                      description: "Edit functionality is not available yet",
+                      variant: "default",
+                    })
+                  }}
+                >
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

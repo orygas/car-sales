@@ -61,7 +61,6 @@ export default function ProfilePage() {
           Manage your account and listings
         </p>
       </div>
-
       <div className="grid gap-6 md:grid-cols-4">
         {/* Sidebar */}
         <Card className="p-6 md:col-span-1 h-fit">

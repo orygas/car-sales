@@ -83,9 +83,10 @@ export async function PATCH(request: Request, props: { params: Promise<{ id: str
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params
     const { userId } = await auth()
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 })

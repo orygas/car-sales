@@ -5,15 +5,6 @@ import { Button } from "@/components/ui/button"
 import { SignedIn, SignedOut, useUser, SignOutButton } from "@clerk/nextjs"
 import { ThemeToggle } from "@/components/theme-toggle"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { SignInForm } from "@/components/auth/sign-in-form"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -44,20 +35,9 @@ export function Header() {
         {/* Desktop Navigation (768px and above) */}
         <div className="hidden md:flex items-center gap-4">
           <SignedOut>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline">Sign In</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Welcome Back</DialogTitle>
-                  <DialogDescription>
-                    Sign in to your account or create a new one
-                  </DialogDescription>
-                </DialogHeader>
-                <SignInForm />
-              </DialogContent>
-            </Dialog>
+            <Button variant="outline" asChild>
+              <Link href="/sign-in">Sign In</Link>
+            </Button>
           </SignedOut>
 
           <SignedIn>
@@ -128,27 +108,16 @@ export function Header() {
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
+                <SheetTitle className="sr-only">Menu</SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-4 pt-6">
                 <SignedOut>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start">
-                        <User className="mr-2 h-4 w-4" />
-                        Sign In
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Welcome Back</DialogTitle>
-                        <DialogDescription>
-                          Sign in to your account or create a new one
-                        </DialogDescription>
-                      </DialogHeader>
-                      <SignInForm />
-                    </DialogContent>
-                  </Dialog>
+                  <Button asChild variant="outline" className="w-full justify-start">
+                    <Link href="/sign-in">
+                      <User className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Link>
+                  </Button>
                 </SignedOut>
 
                 <SignedIn>
@@ -175,7 +144,7 @@ export function Header() {
                     </Link>
                   </Button>
                   <Button asChild variant="ghost" className="w-full justify-start">
-                    <Link href="/favorites">
+                    <Link href="/profile/favorites">
                       <Heart className="mr-2 h-4 w-4" />
                       Favorites
                     </Link>

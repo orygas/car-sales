@@ -50,11 +50,6 @@ export default async function UserListingsPage({
               Found {listings.length} {listings.length === 1 ? 'listing' : 'listings'}
             </p>
             <div className="flex items-center gap-4">
-              <Button asChild variant="default">
-                <Link href="/cars/new">
-                  Create Listing
-                </Link>
-              </Button>
               <ViewModeToggle />
             </div>
           </div>
