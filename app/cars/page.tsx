@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { supabase } from "@/lib/supabase"
 import type { Car } from "@/lib/types"
 import { CarGrid } from "@/components/cars/car-grid"
@@ -11,6 +12,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+
+export const metadata: Metadata = {
+  title: "Browse Cars",
+  description: "Find your perfect car from our extensive collection of quality vehicles. Browse by make, model, price, and more.",
+  openGraph: {
+    title: "Browse Cars | Auto Market",
+    description: "Find your perfect car from our extensive collection of quality vehicles. Browse by make, model, price, and more.",
+  }
+}
 
 const ITEMS_PER_PAGE = 12
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { supabase } from "@/lib/supabase"
@@ -8,6 +9,15 @@ import { Car as CarIcon } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+
+export const metadata: Metadata = {
+  title: "My Favorites",
+  description: "View your favorite car listings. Keep track of cars you're interested in and compare them easily.",
+  openGraph: {
+    title: "My Favorites | Auto Market",
+    description: "View your favorite car listings. Keep track of cars you're interested in and compare them easily.",
+  }
+}
 
 interface FavoriteWithCar {
   car_id: string

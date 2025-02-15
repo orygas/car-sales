@@ -1,13 +1,20 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { CarListingForm } from "@/components/cars/car-form";
+import type { Metadata } from "next"
+import { auth } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
+import { CarListingForm } from "@/components/cars/car-form"
+
+export const metadata: Metadata = {
+  title: "Create Listing",
+  description: "List your car for sale. Add photos, details, and set your price to reach potential buyers.",
+  openGraph: {
+    title: "Create Listing | Auto Market",
+    description: "List your car for sale. Add photos, details, and set your price to reach potential buyers.",
+  }
+}
 
 export default async function NewCarPage() {
-  const { userId } = await auth();
-
-  if (!userId) {
-    redirect("/");
-  }
+  const { userId } = await auth()
+  if (!userId) redirect('/sign-in')
 
   return (
     <div className="container py-6">
@@ -19,5 +26,5 @@ export default async function NewCarPage() {
       </div>
       <CarListingForm />
     </div>
-  );
+  )
 }

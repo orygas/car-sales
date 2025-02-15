@@ -48,28 +48,41 @@ export async function generateStaticParams() {
   })) || []
 }
 
-export async function generateMetadata(
-  props: { params: Promise<{ id: string }> }
-): Promise<Metadata> {
-  const params = await props.params
-  const listing = await getCarListing(params.id)
-
-  if (!listing) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params
+  const car = await getCarListing(resolvedParams.id)
+  
+  if (!car) {
     return {
-      title: "Car Not Found - Auto Market"
+      title: 'Car Not Found',
+      description: 'The requested car listing could not be found.',
     }
   }
 
+  const title = `${car.year} ${car.make.toUpperCase()} ${car.model.toUpperCase()}`
+  const description = car.description.slice(0, 160) + (car.description.length > 160 ? '...' : '')
+
   return {
-    title: `${listing.make.toUpperCase()} ${listing.model.toUpperCase()} - ${listing.mileage.toLocaleString()} km, ${listing.price.toLocaleString()} zł`
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Auto Market`,
+      description,
+      images: car.images?.map(url => ({
+        url,
+        width: 1200,
+        height: 630,
+        alt: title,
+      })) || [],
+    },
   }
 }
 
-export default async function CarPage(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export default async function CarPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
   const { userId } = await auth()
-  const listing = await getCarListing(params.id)
-  const isInitiallyFavorited = await isFavorited(userId, params.id)
+  const listing = await getCarListing(resolvedParams.id)
+  const isInitiallyFavorited = await isFavorited(userId, resolvedParams.id)
 
   if (!listing) {
     notFound()

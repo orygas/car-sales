@@ -225,12 +225,13 @@ export function SearchBar() {
                     <SelectValue placeholder="Price range" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0-5000">Under $5,000</SelectItem>
-                    <SelectItem value="5000-10000">$5,000 - $10,000</SelectItem>
-                    <SelectItem value="10000-20000">$10,000 - $20,000</SelectItem>
-                    <SelectItem value="20000-30000">$20,000 - $30,000</SelectItem>
-                    <SelectItem value="30000-50000">$30,000 - $50,000</SelectItem>
-                    <SelectItem value="50000+">Over $50,000</SelectItem>
+                    <SelectItem value="0-5000">Under 5,000 zł</SelectItem>
+                    <SelectItem value="5000-10000">5,000 - 10,000 zł</SelectItem>
+                    <SelectItem value="10000-20000">10,000 - 20,000 zł</SelectItem>
+                    <SelectItem value="20000-30000">20,000 - 30,000 zł</SelectItem>
+                    <SelectItem value="30000-50000">30,000 - 50,000 zł</SelectItem>
+                    <SelectItem value="50000-100000">50,000 - 100,000 zł</SelectItem>
+                    <SelectItem value="100000+">Over 100,000 zł</SelectItem>
                   </SelectContent>
                 </Select>
 

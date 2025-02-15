@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { supabase } from "@/lib/supabase"
@@ -8,6 +9,15 @@ import Link from "next/link"
 import { Car as CarIcon } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { CarCard } from "@/components/cars/car-card"
+
+export const metadata: Metadata = {
+  title: "My Listings",
+  description: "View and manage your car listings. Edit details, update prices, and track your sales.",
+  openGraph: {
+    title: "My Listings | Auto Market",
+    description: "View and manage your car listings. Edit details, update prices, and track your sales.",
+  }
+}
 
 async function getUserListings(userId: string): Promise<Car[]> {
   const { data: listings } = await supabase
