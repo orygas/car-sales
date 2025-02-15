@@ -1,6 +1,6 @@
-# Auto Market (v1.0.0)
+# Auto Market (v1.1.0)
 
-A modern, production-ready car marketplace built with Next.js 15, featuring authentication, real-time database functionality, and a responsive UI.
+A modern, production-ready car marketplace built with Next.js 15, featuring secure authentication, real-time database functionality, and a responsive UI.
 
 ## Tech Stack
 
@@ -16,6 +16,7 @@ A modern, production-ready car marketplace built with Next.js 15, featuring auth
 
 - 🎨 Modern, responsive UI with dark/light mode
 - 🔐 Secure authentication with Clerk
+- 🛡️ Enhanced API security with route protection
 - 📱 Mobile-first design approach
 - 🖼️ Image upload and management
 - 🔍 Advanced search and filtering
@@ -27,7 +28,20 @@ A modern, production-ready car marketplace built with Next.js 15, featuring auth
 - ❤️ Favorite listings functionality
 - 📊 User dashboard
 - 🔒 Protected routes
-- 🌐 SEO optimized
+- 🌐 SEO optimized with dynamic metadata
+- 🎭 Server/Client component separation
+- 🔄 Loading states and skeletons
+
+## Security Features
+
+- Row Level Security (RLS) policies
+- Secure authentication with Clerk
+- Protected API routes with method-based access control
+- Type-safe database queries
+- Environment variable validation
+- Input validation and sanitization
+- CORS and security headers
+- API rate limiting
 
 ## Project Structure
 
@@ -43,9 +57,11 @@ A modern, production-ready car marketplace built with Next.js 15, featuring auth
 │   ├── auth/           # Authentication components
 │   ├── cars/           # Car-related components
 │   ├── layout/         # Layout components
+│   ├── profile/        # Profile components
 │   └── ui/             # UI components (shadcn/ui)
 ├── lib/                # Utilities and configurations
-│   └── schemas/        # Zod validation schemas
+│   ├── schemas/        # Zod validation schemas
+│   └── types/         # TypeScript types
 ├── public/             # Static assets
 └── supabase/          # Database configuration
 ```
@@ -112,6 +128,9 @@ CREATE TABLE user_favorites (
    NEXT_PUBLIC_SUPABASE_URL=
    NEXT_PUBLIC_SUPABASE_ANON_KEY=
    SUPABASE_SERVICE_ROLE_KEY=
+
+   # Application URL (used for CORS)
+   NEXT_PUBLIC_URL=
    ```
 
 4. Run the development server:
@@ -124,28 +143,39 @@ CREATE TABLE user_favorites (
    npm run build
    ```
 
-## Security Features
-
-- Row Level Security (RLS) policies
-- Secure authentication with Clerk
-- Protected API routes
-- Type-safe database queries
-- Environment variable protection
-- Input validation and sanitization
-
 ## Performance Optimizations
 
+- Server/Client component separation
 - Image optimization with Next.js Image
 - Component-level code splitting
 - Efficient data fetching with Supabase
 - Responsive image loading
+- Dynamic metadata generation
+- Loading state skeletons
 - Optimized build output
+
+## Recent Updates (v1.1.0)
+
+- Enhanced API security with method-based access control
+- Improved Next.js 15 compatibility
+- Server/Client component separation for better performance
+- Dynamic metadata generation for better SEO
+- Loading state improvements
+- Security header enhancements
+- Environment variable validation
+- Type safety improvements
 
 ## License
 
 This project is licensed under the MIT License.
 
 ## Version History
+
+### v1.1.0
+- Enhanced security features
+- Next.js 15 compatibility updates
+- Performance improvements
+- Component architecture updates
 
 ### v1.0.0
 - Initial production release
