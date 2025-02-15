@@ -129,7 +129,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <ErrorBoundary>
-              <div className="relative flex min-h-screen flex-col">
+              <div className="relative flex min-h-screen flex-col px-4">
                 <Header />
                 <main className="flex-1 container mx-auto py-10">{children}</main>
                 <Footer />
