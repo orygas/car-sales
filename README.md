@@ -1,34 +1,54 @@
-# Auto Market
+# Auto Market (v1.0.0)
 
-A modern car marketplace built with Next.js, featuring authentication and real-time database functionality.
+A modern, production-ready car marketplace built with Next.js 15, featuring authentication, real-time database functionality, and a responsive UI.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI + shadcn/ui
-- **Authentication**: Clerk
-- **Database**: Supabase
+- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Radix UI](https://www.radix-ui.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- **Authentication**: [Clerk](https://clerk.com/)
+- **Database**: [Supabase](https://supabase.com/)
 - **Language**: TypeScript
+- **Deployment**: Netlify
 
-## Features
+## Core Features
 
-- Modern, responsive UI with dark/light mode support
-- Authentication with Clerk (email, social logins)
-- Car listings with image support
-- Real-time database with Supabase
-- Row Level Security (RLS) for data protection
-- Form validation with React Hook Form and Zod
-- Searchable dropdowns for car makes and models
-- Optimized image handling
+- 🎨 Modern, responsive UI with dark/light mode
+- 🔐 Secure authentication with Clerk
+- 📱 Mobile-first design approach
+- 🖼️ Image upload and management
+- 🔍 Advanced search and filtering
+- ⚡ Real-time updates with Supabase
+- 🛡️ Row Level Security (RLS)
+- 📝 Form validation (React Hook Form + Zod)
+- 🚗 Car make/model searchable dropdowns
+- 🖥️ Grid/List view toggle
+- ❤️ Favorite listings functionality
+- 📊 User dashboard
+- 🔒 Protected routes
+- 🌐 SEO optimized
 
-## API Routes
+## Project Structure
 
-- `GET /api/cars` - List all cars with filtering options
-- `POST /api/cars` - Create a new car listing (authenticated)
-- `GET /api/cars/[id]` - Get a single car
-- `PATCH /api/cars/[id]` - Update a car listing (owner only)
-- `DELETE /api/cars/[id]` - Delete a car listing (owner only)
+```
+.
+├── app/                  # Next.js 15 app directory
+│   ├── about/           # About page
+│   ├── api/             # API routes
+│   ├── cars/           # Car listings and details
+│   ├── profile/        # User profile section
+│   └── [...]/          # Other app routes
+├── components/          # Reusable components
+│   ├── auth/           # Authentication components
+│   ├── cars/           # Car-related components
+│   ├── layout/         # Layout components
+│   └── ui/             # UI components (shadcn/ui)
+├── lib/                # Utilities and configurations
+│   └── schemas/        # Zod validation schemas
+├── public/             # Static assets
+└── supabase/          # Database configuration
+```
 
 ## Database Schema
 
@@ -63,6 +83,17 @@ CREATE TABLE car_images (
 );
 ```
 
+### User Favorites Table
+```sql
+CREATE TABLE user_favorites (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id VARCHAR(255) NOT NULL,
+  car_id UUID REFERENCES cars(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, car_id)
+);
+```
+
 ## Getting Started
 
 1. Clone the repository
@@ -74,13 +105,13 @@ CREATE TABLE car_images (
 3. Set up environment variables:
    ```env
    # Clerk Authentication
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-   CLERK_SECRET_KEY=your_clerk_secret_key
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+   CLERK_SECRET_KEY=
 
    # Supabase Configuration
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   NEXT_PUBLIC_SUPABASE_URL=
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=
+   SUPABASE_SERVICE_ROLE_KEY=
    ```
 
 4. Run the development server:
@@ -88,34 +119,38 @@ CREATE TABLE car_images (
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Build for production:
+   ```bash
+   npm run build
+   ```
 
-## Project Structure
+## Security Features
 
-- `/app` - Next.js app router pages and API routes
-- `/components` - Reusable UI components
-- `/lib` - Utility functions and configurations
-- `/public` - Static assets
-- `/supabase` - Database schema and configurations
-
-## Security
-
-- Row Level Security (RLS) policies ensure users can only:
-  - View all car listings
-  - Create their own listings
-  - Edit/delete only their own listings
-- Clerk handles authentication securely
-- Environment variables for sensitive keys
+- Row Level Security (RLS) policies
+- Secure authentication with Clerk
+- Protected API routes
 - Type-safe database queries
+- Environment variable protection
+- Input validation and sanitization
 
-## Contributing
+## Performance Optimizations
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+- Image optimization with Next.js Image
+- Component-level code splitting
+- Efficient data fetching with Supabase
+- Responsive image loading
+- Optimized build output
 
 ## License
 
 This project is licensed under the MIT License.
+
+## Version History
+
+### v1.0.0
+- Initial production release
+- Complete car marketplace functionality
+- User authentication and profiles
+- Real-time updates
+- Mobile-responsive design
+- Production-ready deployment

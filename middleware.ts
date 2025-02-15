@@ -1,11 +1,23 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
-export default clerkMiddleware();
+// Apply security headers to all responses
+function applySecurityHeaders(response: NextResponse) {
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  return response
+}
+
+export default clerkMiddleware(() => {
+  const response = NextResponse.next()
+  return applySecurityHeaders(response)
+})
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search
-    '/((?!_next|.*\\..*).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)'],
-}; 
+    '/((?!.+\\.[\\w]+$|_next).*)',
+    '/(api|trpc)(.*)',
+  ]
+} 

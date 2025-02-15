@@ -61,7 +61,7 @@ export async function generateMetadata(
   }
 
   return {
-    title: `${listing.make.toUpperCase()} ${listing.model.toUpperCase()} - ${listing.mileage.toLocaleString()} km, ${listing.price.toLocaleString()} zł - Auto Market`
+    title: `${listing.make.toUpperCase()} ${listing.model.toUpperCase()} - ${listing.mileage.toLocaleString()} km, ${listing.price.toLocaleString()} zł`
   }
 }
 
