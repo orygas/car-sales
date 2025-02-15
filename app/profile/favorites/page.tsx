@@ -35,17 +35,19 @@ async function getFavorites(): Promise<Car[]> {
   return (favorites as unknown as FavoriteWithCar[]).map(f => f.cars)
 }
 
+type PageProps = {
+  searchParams: Promise<{ view?: string }>
+}
+
 export default async function FavoritesPage({
   searchParams,
-}: {
-  searchParams: Promise<{ view?: string }> | { view?: string }
-}) {
+}: PageProps) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
   const [favorites, params] = await Promise.all([
     getFavorites(),
-    Promise.resolve(searchParams)
+    searchParams
   ])
   
   const view = (params.view as "grid" | "list") || "grid"

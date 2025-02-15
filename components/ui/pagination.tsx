@@ -39,7 +39,7 @@ type PaginationLinkProps = {
   isActive?: boolean
   href: string | {
     pathname?: string
-    query: Record<string, any>
+    query: Record<string, string | number>
   }
 } & Pick<ButtonProps, "size"> &
   Omit<React.ComponentProps<typeof Link>, "href">

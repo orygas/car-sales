@@ -3,7 +3,6 @@ import type { Car } from "@/lib/types"
 import { CarGrid } from "@/components/cars/car-grid"
 import { SearchBar } from "@/components/cars/search-bar"
 import { ViewModeToggle } from "@/components/cars/view-mode-toggle"
-import { auth } from "@clerk/nextjs/server"
 import {
   Pagination,
   PaginationContent,
@@ -18,29 +17,28 @@ const ITEMS_PER_PAGE = 12
 type SearchParams = { [key: string]: string | string[] | undefined }
 
 async function getCarListings(params: SearchParams) {
-  const searchParams = await params
-  const page = Number(searchParams?.page) || 1
+  const page = Number(params?.page) || 1
   const from = (page - 1) * ITEMS_PER_PAGE
   
   // Build the query with filters
   const baseQuery = supabase.from('cars').select('*', { count: 'exact' })
 
   // Apply filters
-  if (searchParams.make) baseQuery.eq('make', searchParams.make)
-  if (searchParams.model) baseQuery.eq('model', searchParams.model)
-  if (searchParams.yearFrom) baseQuery.gte('year', parseInt(searchParams.yearFrom as string))
-  if (searchParams.yearTo) baseQuery.lte('year', parseInt(searchParams.yearTo as string))
-  if (searchParams.transmission) baseQuery.eq('transmission', searchParams.transmission)
-  if (searchParams.fuelType) baseQuery.eq('fuel_type', searchParams.fuelType)
-  if (searchParams.mileageFrom) baseQuery.gte('mileage', parseInt(searchParams.mileageFrom as string))
-  if (searchParams.mileageTo) baseQuery.lte('mileage', parseInt(searchParams.mileageTo as string))
-  if (searchParams.priceRange) {
-    const [min, max] = (searchParams.priceRange as string).split('-')
+  if (params.make) baseQuery.eq('make', params.make)
+  if (params.model) baseQuery.eq('model', params.model)
+  if (params.yearFrom) baseQuery.gte('year', parseInt(params.yearFrom as string))
+  if (params.yearTo) baseQuery.lte('year', parseInt(params.yearTo as string))
+  if (params.transmission) baseQuery.eq('transmission', params.transmission)
+  if (params.fuelType) baseQuery.eq('fuel_type', params.fuelType)
+  if (params.mileageFrom) baseQuery.gte('mileage', parseInt(params.mileageFrom as string))
+  if (params.mileageTo) baseQuery.lte('mileage', parseInt(params.mileageTo as string))
+  if (params.priceRange) {
+    const [min, max] = (params.priceRange as string).split('-')
     if (min) baseQuery.gte('price', parseInt(min))
     if (max && max !== '+') baseQuery.lte('price', parseInt(max))
   }
-  if (searchParams.keyword) {
-    baseQuery.or(`description.ilike.%${searchParams.keyword}%,make.ilike.%${searchParams.keyword}%,model.ilike.%${searchParams.keyword}%`)
+  if (params.keyword) {
+    baseQuery.or(`description.ilike.%${params.keyword}%,make.ilike.%${params.keyword}%,model.ilike.%${params.keyword}%`)
   }
 
   // Get the count and paginated results
@@ -60,22 +58,11 @@ async function getCarListings(params: SearchParams) {
   }
 }
 
-async function getFavorites(userId: string | null) {
-  if (!userId) return new Set<string>()
-
-  const { data: favorites } = await supabase
-    .from('user_favorites')
-    .select('car_id')
-    .eq('user_id', userId)
-
-  return new Set(favorites?.map(f => f.car_id) || [])
-}
 
 interface CarsPageClientProps {
   listings: Car[]
   totalPages: number
   totalCount: number
-  initialFavorites: Set<string>
   page: number
   view: "grid" | "list"
   baseQuery: Record<string, string>
@@ -85,7 +72,6 @@ function CarsPageClient({
   listings, 
   totalPages, 
   totalCount, 
-  initialFavorites,
   page,
   view,
   baseQuery
@@ -117,7 +103,6 @@ function CarsPageClient({
       <CarGrid 
         listings={listings} 
         view={view}
-        favoritedCarIds={Array.from(initialFavorites)}
       />
 
       {totalPages > 1 && (
@@ -145,30 +130,29 @@ function CarsPageClient({
   )
 }
 
+type PageProps = {
+  searchParams: Promise<SearchParams>
+}
+
 export default async function CarsPage({
   searchParams,
-}: {
-  searchParams: SearchParams
-}) {
-  const { userId } = await auth()
-  const params = await searchParams
-  const page = Number(params?.page) || 1
-  const viewMode = params?.view?.toString() || "grid"
+}: PageProps) {
+  const resolvedParams = await searchParams
+  const page = Number(resolvedParams?.page) || 1
+  const viewMode = resolvedParams?.view?.toString() || "grid"
   const view = (viewMode === "list" ? "list" : "grid") as "grid" | "list"
-  const baseQuery = Object.entries(params).reduce((acc, [key, value]) => 
+  const baseQuery = Object.entries(resolvedParams).reduce((acc, [key, value]) => 
     value ? { ...acc, [key]: String(value) } : acc, 
     {} as Record<string, string>
   )
 
-  const { listings, totalPages, totalCount } = await getCarListings(searchParams)
-  const favoritedCars = await getFavorites(userId)
+  const { listings, totalPages, totalCount } = await getCarListings(resolvedParams)
 
   return (
     <CarsPageClient 
       listings={listings}
       totalPages={totalPages}
       totalCount={totalCount}
-      initialFavorites={favoritedCars}
       page={page}
       view={view}
       baseQuery={baseQuery}

@@ -19,17 +19,19 @@ async function getUserListings(userId: string): Promise<Car[]> {
   return listings as Car[] || []
 }
 
+type PageProps = {
+  searchParams: Promise<{ view?: string }>
+}
+
 export default async function UserListingsPage({
   searchParams,
-}: {
-  searchParams: Promise<{ view?: string }> | { view?: string }
-}) {
+}: PageProps) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
   const [listings, params] = await Promise.all([
     getUserListings(userId),
-    Promise.resolve(searchParams)
+    searchParams
   ])
   
   const view = (params.view as "grid" | "list") || "grid"
