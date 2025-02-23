@@ -39,7 +39,7 @@ export const viewport: Viewport = {
   ],
 }
 
-const baseUrl = env.NEXT_PUBLIC_URL || 'https://automarket.example.com'
+const baseUrl = env.NEXT_PUBLIC_URL || 'https://automarkets.netlify.app/'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
