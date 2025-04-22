@@ -10,7 +10,6 @@ import {
   CarouselNext, 
   CarouselPrevious 
 } from "@/components/ui/carousel"
-import { cn } from "@/lib/utils"
 import type { Car } from "@/lib/types"
 
 interface LatestListingsProps {
@@ -34,7 +33,7 @@ export function LatestListings({ listings }: LatestListingsProps) {
       <CardHeader className="px-0">
         <CardTitle className="text-2xl">Newest Listings</CardTitle>
         <CardDescription>
-Catch them while they're hot!        </CardDescription>
+Catch them while they&apos;re hot!        </CardDescription>
       </CardHeader>
       
       {isMobile ? (
