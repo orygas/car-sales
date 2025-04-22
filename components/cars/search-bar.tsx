@@ -178,8 +178,13 @@ export function SearchBar() {
             <Button
               variant="ghost"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="w-full justify-between"
+              className="w-full "
             >
+              {showAdvanced ? (
+                <ChevronUp className="mr-2 h-4 w-4" />
+              ) : (
+                <ChevronDown className="mr-2 h-4 w-4" />
+              )}
               Advanced filters
               {showAdvanced ? (
                 <ChevronUp className="ml-2 h-4 w-4" />

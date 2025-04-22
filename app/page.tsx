@@ -1,11 +1,11 @@
 import { auth } from "@clerk/nextjs/server"
 import { supabase } from "@/lib/supabase"
-import { FeaturedListings } from "@/components/cars/featured-listings"
+import { LatestListings } from "@/components/cars/latest-listings"
 import { SearchBar } from "@/components/cars/search-bar"
 import { PopularBrands } from "@/components/cars/popular-brands"
 import type { Car } from "@/lib/types"
 
-async function getFeaturedListings() {
+async function getLatestListings() {
   const { data: listings, error } = await supabase
     .from('cars')
     .select('*')
@@ -13,7 +13,7 @@ async function getFeaturedListings() {
     .limit(6)
 
   if (error) {
-    console.error('Error fetching featured listings:', error)
+    console.error('Error fetching latest listings:', error)
     return []
   }
 
@@ -34,7 +34,7 @@ async function getFavorites(userId: string | null) {
 export default async function HomePage() {
   const { userId } = await auth()
   const [listings] = await Promise.all([
-    getFeaturedListings(),
+    getLatestListings(),
     getFavorites(userId)
   ])
 
@@ -52,7 +52,7 @@ export default async function HomePage() {
       </div>
 
       <div className="space-y-10">
-        <FeaturedListings listings={listings} />
+        <LatestListings listings={listings} />
         
         <div>
           <h2 className="text-2xl font-bold mb-6">Popular Brands</h2>

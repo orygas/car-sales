@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import { Header } from "@/components/layout/header"
@@ -10,8 +10,9 @@ import { ErrorBoundary } from "@/components/error-boundary"
 import { env } from "@/lib/env"
 
 // Optimize font loading
-const inter = Inter({ 
+const montserrat = Montserrat({ 
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: 'swap',
   preload: true,
   fallback: [
@@ -118,7 +119,7 @@ export default function RootLayout({
     <html 
       lang="en" 
       suppressHydrationWarning
-      className={inter.className}
+      className={montserrat.className}
     >
       <body className="antialiased">
         <ClerkProvider>

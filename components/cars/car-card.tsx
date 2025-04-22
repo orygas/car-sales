@@ -106,7 +106,7 @@ export function CarCard({ car, featured, listMode, showActions }: CarCardProps) 
             />
             {featured && (
               <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 text-xs font-medium rounded">
-                Featured
+                New
               </div>
             )}
           </div>
